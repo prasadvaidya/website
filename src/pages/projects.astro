@@ -1,0 +1,60 @@
+---
+import { getCollection } from "astro:content";
+import CTA from "../components/CTA.astro";
+import PageHeader from "../components/PageHeader.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const projects = await getCollection("projects");
+---
+
+<BaseLayout
+  title="Projects"
+  description="Products, experiments, and technical project notes from Prasad Vaidya."
+>
+  <PageHeader
+    eyebrow="Projects"
+    title="Products, experiments, and architecture notes."
+    description="A showcase of SaaS ideas, AI workflows, local LLM experiments, personal tracking tools, and music learning systems."
+  />
+
+  <section class="section-tight">
+    <div class="container project-grid">
+      {
+        projects.map((project) => (
+          <ProjectCard
+            href={`/projects/${project.id}/`}
+            title={project.data.title}
+            problem={project.data.problem}
+            whyItMatters={project.data.whyItMatters}
+            stack={project.data.stack}
+            status={project.data.status}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Further Reading"
+    title="Read the notes behind the systems."
+    description="The writing archive explains the architecture judgment, AI workflow thinking, and product constraints behind these experiments."
+    primaryLabel="Read writing"
+    primaryHref="/writing/"
+    analyticsLocation="projects_cta"
+  />
+</BaseLayout>
+
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  @media (max-width: 760px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

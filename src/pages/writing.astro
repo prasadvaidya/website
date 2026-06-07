@@ -1,0 +1,134 @@
+---
+import { getCollection } from "astro:content";
+import BlogCard from "../components/BlogCard.astro";
+import CTA from "../components/CTA.astro";
+import PageHeader from "../components/PageHeader.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { sortByDate } from "../utils/site";
+
+const posts = sortByDate((await getCollection("blog")).filter((post) => !post.data.draft));
+const categories = [
+  "Software Architecture",
+  "AI Engineering",
+  "Local LLMs",
+  "SaaS Building",
+  "Engineering Leadership",
+  "Developer Productivity",
+  "Personal Systems"
+];
+---
+
+<BaseLayout
+  title="Writing"
+  description="Technical blog and long-form thinking by Prasad Vaidya on architecture, AI engineering, SaaS, leadership, and personal systems."
+  noindex={posts.length === 0}
+>
+  <PageHeader
+    eyebrow="Writing"
+    title="Notes on software, AI, leadership, and personal systems."
+    description="A technical blog and digital garden for architecture notes, AI engineering experiments, SaaS building, engineering leadership, developer productivity, and disciplined personal systems."
+  />
+
+  <section class="section-tight">
+    <div class="container writing-list">
+      {posts.length === 0 && (
+        <section class="empty-writing surface" aria-labelledby="empty-writing-title">
+          <p class="eyebrow">Coming Soon</p>
+          <h2 id="empty-writing-title">Notes will be added here.</h2>
+          <p>
+            Posts will cover architecture,
+            AI systems, product engineering, developer productivity, and personal systems.
+          </p>
+        </section>
+      )}
+
+      {posts.length > 0 &&
+        categories.map((category) => {
+          const categoryPosts = posts.filter((post) => post.data.category === category);
+          if (categoryPosts.length === 0) return null;
+          return (
+            <section id={category.toLowerCase().replaceAll(" ", "-")} class="category-section">
+              <div class="category-heading">
+                <p class="eyebrow">Category</p>
+                <h2>{category}</h2>
+              </div>
+              <div class="post-grid">
+                {categoryPosts.map((post) => (
+                  <BlogCard
+                    href={`/writing/${post.id}/`}
+                    title={post.data.title}
+                    description={post.data.description}
+                    pubDate={post.data.pubDate}
+                    readingTime={post.data.readingTime}
+                    category={post.data.category}
+                    tags={post.data.tags}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Next"
+    title="Explore the projects behind the notes."
+    description="The project archive connects the writing to concrete systems, product experiments, local model workflows, and personal tools."
+    primaryLabel="View projects"
+    primaryHref="/projects/"
+    analyticsLocation="writing_cta"
+  />
+</BaseLayout>
+
+<style>
+  .writing-list {
+    display: grid;
+    gap: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .empty-writing {
+    border-radius: 8px;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .empty-writing p:not(.eyebrow) {
+    max-width: 42rem;
+    margin: 0.75rem 0 0;
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.7;
+  }
+
+  .category-section {
+    scroll-margin-top: 6rem;
+  }
+
+  .category-heading {
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    margin: 0.28rem 0 0;
+    font-size: clamp(1.75rem, 3.4vw, 2.8rem);
+    line-height: 1.05;
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  @media (max-width: 940px) {
+    .post-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .post-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

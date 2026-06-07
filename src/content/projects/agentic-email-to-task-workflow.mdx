@@ -1,0 +1,53 @@
+---
+title: "Agentic Email-to-Task Workflow with Reporting Dashboard"
+description: "An agentic workflow that converts important emails into structured tasks and project updates, with a reporting dashboard."
+status: "Live"
+stack: ["LLM classification", "n8n", "Node.js", "Typescript", "React", "Postgres", "Queues", "Gmail API", "ClickUp API", "Slack API"]
+problem: "Important emails often contain tasks, commitments, and updates that never reach the project system cleanly."
+whyItMatters: "A constrained workflow can reduce missed commitments while keeping humans in control of final task creation."
+featured: true
+---
+
+## Problem
+
+Email often contains implied work. The task system only stays accurate when someone manually extracts that work, documents it, and assigns it. This manual workflow had scattered components and no dashboard for business stakeholders.
+The existing task management platform had limitations, but migrating to a new platform was not practical, so the workflow had to work within the current system.
+
+## Why I Built It
+
+Email-based support had become a bottleneck, with no clear ownership or defined turnaround time. The team needed a triage system to classify support emails by severity and predefined categories. This helped improve client success while making optimal use of the team’s bandwidth.
+
+Without a reporting dashboard, business stakeholders had no visibility into the team’s status and needed to sync with the team on individual tasks.
+
+
+## Architecture
+
+The workflow classifies incoming emails, extracts client details for a multi-tenant platform, maps them to projects, and prepares tasks for human review.
+These tasks move through a review queue before anything is pushed into the existing task management system, which keeps the automation useful without letting it silently create operational risk.
+
+The reporting dashboard gives stakeholders a view of volume, severity, category, ownership, and turnaround status. That visibility matters because the system is not only an automation flow; it is also a coordination layer between support, engineering, and business teams.
+
+## Tech Stack
+- n8n
+- Queues
+- LLM classification
+- Typescript
+- Node.js
+- React
+- Postgres  
+
+## Current Status
+
+The workflow was deployed and it helped with improved team productivity and better visibility for business stakeholders. 
+
+## Diagrams
+
+The core architecture is an email ingestion pipeline, classification step, review queue, task creation workflow, and reporting dashboard. The most important boundary is the human review point between classification and task creation.
+
+## What I Learned
+
+Email automation needs a conservative trust boundary. Automations still need human review because context can be scattered across multiple emails or knowledge platforms, and the LLM may not always have the complete picture.
+
+## Next Steps
+
+Build a central knowledge base that brings together multiple knowledge sources and gives the automation a more coherent view of context.

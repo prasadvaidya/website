@@ -1,0 +1,47 @@
+---
+title: "Local LLM / OpenClaw Experiments"
+description: "Experiments with local models, tool calling, agent orchestration, and constrained hardware."
+status: "Research and experimentation"
+stack: ["OpenClaw", "LM Studio", "Local GGUF models", "Ubuntu", "Tool calling"]
+problem: "Local AI workflows are promising but constrained by model quality, hardware, tooling, and orchestration reliability."
+whyItMatters: "Local models can enable private, low-cost, and offline workflows when the product design matches their constraints."
+featured: true
+---
+
+## Problem
+
+Local LLMs are increasingly capable, but they are not drop-in replacements for hosted frontier models. The product and workflow need to fit the hardware.
+
+## Why I Built It
+
+I wanted hands-on evidence about where local models are useful for agents, tool calling, and personal productivity workflows.
+
+## Architecture
+
+The experiments compare local model runtimes, tool-call contracts, prompt structure, and agent orchestration boundaries on constrained hardware.
+
+## Tech Stack
+
+- OpenClaw
+- LM Studio
+- Local GGUF models
+- Ubuntu
+- Tool calling
+
+## Current Status
+
+Research and experimentation.
+
+## Experiment Notes
+
+The most useful comparison is not raw model score. It is whether a local model can complete a constrained workflow with acceptable latency, predictable tool use, and a failure mode that is easy to inspect.
+
+Each experiment tracks the model, prompt structure, available tools, hardware constraints, task shape, and the point where human review becomes necessary.
+
+## What I Learned
+
+Small local models work best when they are asked to perform narrow, structured tasks with explicit tools.
+
+## Next Steps
+
+Document hardware limits, build a small repeatable task benchmark, and test one useful local workflow end to end.

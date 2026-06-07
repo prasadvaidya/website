@@ -1,0 +1,112 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  problem: string;
+  whyItMatters: string;
+  stack: string[];
+  status: string;
+}
+
+const { href, title, problem, whyItMatters, stack, status } = Astro.props;
+---
+
+<article class="card project-card">
+  <a
+    href={href}
+    aria-label={`View ${title}`}
+    data-analytics-event="project_view"
+    data-analytics-category="project"
+    data-analytics-label={title}
+    data-analytics-location="project_card"
+  >
+    <div class="project-top">
+      <h3>{title}</h3>
+      <span>{status}</span>
+    </div>
+    <dl>
+      <div>
+        <dt>Problem</dt>
+        <dd>{problem}</dd>
+      </div>
+      <div>
+        <dt>Why it matters</dt>
+        <dd>{whyItMatters}</dd>
+      </div>
+    </dl>
+    <div class="stack" aria-label="Technology stack">
+      {stack.slice(0, 5).map((item) => <span>{item}</span>)}
+    </div>
+  </a>
+</article>
+
+<style>
+  .project-card a {
+    display: grid;
+    height: 100%;
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+
+  .project-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.18rem;
+    line-height: 1.2;
+  }
+
+  .project-top span {
+    min-width: max-content;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+    border-radius: 999px;
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .dark .project-top span {
+    color: var(--accent);
+  }
+
+  dl {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+  }
+
+  dt {
+    color: var(--text);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0.22rem 0 0;
+    color: var(--muted);
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: auto;
+  }
+
+  .stack span {
+    border-radius: 999px;
+    background: var(--surface-muted);
+    color: var(--muted);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.25rem 0.52rem;
+  }
+</style>

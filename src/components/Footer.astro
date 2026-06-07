@@ -1,0 +1,84 @@
+---
+import { navItems, site } from "../utils/site";
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-meta">
+      <a class="footer-brand" href="/">Prasad Vaidya</a>
+      <span>Architecture, AI systems, product engineering</span>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer navigation">
+      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+
+    <nav class="footer-links" aria-label="Footer links">
+      <a href={site.socials.github}>GitHub</a>
+      <a href={site.socials.linkedin}>LinkedIn</a>
+      <a href="/rss.xml">RSS</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface-muted) 42%, transparent);
+    padding-block: 1.3rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+  }
+
+  .footer-meta {
+    display: grid;
+    min-width: max-content;
+    gap: 0.15rem;
+  }
+
+  .footer-meta span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 650;
+  }
+
+  .footer-brand {
+    display: inline-flex;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.8rem;
+  }
+
+  nav a {
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+
+  nav a:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 900px) {
+    .footer-inner {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .footer-meta {
+      min-width: 0;
+    }
+  }
+</style>

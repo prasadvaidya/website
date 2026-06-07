@@ -1,0 +1,112 @@
+---
+import CTA from "../components/CTA.astro";
+import PageHeader from "../components/PageHeader.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const sections = [
+  {
+    id: "health",
+    title: "Health",
+    positioning: "Health as a long-term engineering project.",
+    topics: ["Weight loss journey", "Strength training", "Nutrition experiments", "Sleep tracking", "Habit consistency"]
+  },
+  {
+    id: "music",
+    title: "Music",
+    positioning: "Music as a study of discipline, taste, improvisation, and emotion.",
+    topics: ["Guitar", "Jazz", "Practice logs", "Arrangements"]
+  },
+  {
+    id: "entrepreneurship",
+    title: "Entrepreneurship",
+    positioning: "Exploring the path from technical leadership to independent product building.",
+    topics: ["Product ideas", "SaaS experiments", "Lessons learned"]
+  }
+];
+---
+
+<BaseLayout
+  title="Life"
+  description="Personal systems around health, music, entrepreneurship, and disciplined creative work."
+>
+  <PageHeader
+    eyebrow="Life"
+    title="Personal systems that make better work possible."
+    description="A professional site can still be human. This space collects health experiments, music practice, and the path from technical leadership toward independent product building."
+  />
+
+  <section class="section-tight">
+    <div class="container life-sections">
+      {
+        sections.map((section) => (
+          <article class="life-section" id={section.id}>
+            <div>
+              <p class="eyebrow">{section.title}</p>
+              <h2>{section.positioning}</h2>
+            </div>
+            <ul>
+              {section.topics.map((topic) => <li>{topic}</li>)}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Build Log"
+    title="Read notes on systems across work and life."
+    description="The writing archive connects technical decision-making with health, music, learning, and independent product building."
+    primaryLabel="Read writing"
+    primaryHref="/writing/"
+    analyticsLocation="life_cta"
+  />
+</BaseLayout>
+
+<style>
+  .life-sections {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .life-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(16rem, 0.9fr);
+    gap: clamp(1.5rem, 5vw, 3rem);
+    scroll-margin-top: 6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  h2 {
+    max-width: 44rem;
+    margin: 0.35rem 0 0;
+    font-size: clamp(1.75rem, 3.8vw, 3.2rem);
+    line-height: 1.04;
+  }
+
+  ul {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    font-weight: 750;
+    padding: 0.58rem 0.8rem;
+  }
+
+  @media (max-width: 780px) {
+    .life-section {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Prasad Vaidya, Software Architecture, AI Systems, and Product Engineering">
+  <rect width="1200" height="630" fill="#f7f7f2"/>
+  <rect x="72" y="72" width="1056" height="486" rx="18" fill="#fffffb" stroke="#dcdbce"/>
+  <text x="112" y="205" fill="#27716c" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800" letter-spacing="4">SOFTWARE ARCHITECTURE / AI SYSTEMS</text>
+  <text x="112" y="332" fill="#171613" font-family="Inter, Arial, sans-serif" font-size="116" font-weight="800">Prasad Vaidya</text>
+  <text x="116" y="418" fill="#5e5b52" font-family="Inter, Arial, sans-serif" font-size="34">Helping startups build products with clear architecture.</text>
+  <circle cx="1010" cy="176" r="72" fill="#d5efea"/>
+  <text x="960" y="196" fill="#1e3d3b" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800">PV</text>
+</svg>

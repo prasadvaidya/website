@@ -1,0 +1,36 @@
+---
+title: "Personal Knowledge Base"
+description: "A central platform for developers and knowledge workers to capture, search, and retrieve work context across notes, audio, and OCR."
+status: "MVP"
+stack: ["LLM Classification", "OCR", "Voice Transcription"]
+problem: "Knowledge workers lose context across meetings, notes, screenshots, documents, and scattered task systems."
+whyItMatters: "The product aims to reduce mental load by making past context searchable and useful at the moment of work."
+featured: true
+---
+
+## Problem
+
+Developers and knowledge workers accumulate context faster than they can organize it. Important details live across calls, chats, screenshots, notes, and task tools.
+
+## Why I Built It
+
+Frequent context switching reduced productivity and caused mental fatigue. The goal was to create a trusted system that could capture context with minimal friction and surface it when it mattered most.
+
+## Architecture
+
+The initial architecture separates capture, normalization, indexing, retrieval, and answer generation. Notes, audio transcripts, and OCR text become normalized records before embedding and search.
+
+## Tech Stack
+
+- React Native
+- Postgres
+- Embeddings
+- RAG
+
+## Current Status
+
+Growth and marketing. The first milestone was to build a narrow capture-and-retrieval loop before expanding into richer ingestion.
+
+## Next Steps
+
+Feature development will be guided by user feedback, with each iteration shaped by real usage patterns and pain points.

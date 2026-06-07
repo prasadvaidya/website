@@ -1,0 +1,74 @@
+---
+import { analytics } from "../utils/site";
+
+const { cloudflareWebAnalyticsToken, gaMeasurementId } = analytics;
+const cloudflareBeaconConfig = JSON.stringify({ token: cloudflareWebAnalyticsToken });
+---
+
+{
+  cloudflareWebAnalyticsToken && (
+    <script
+      is:inline
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={cloudflareBeaconConfig}
+    />
+  )
+}
+
+{
+  gaMeasurementId && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`} />
+      <script is:inline define:vars={{ gaMeasurementId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        window.gtag = window.gtag || gtag;
+        window.gtag("js", new Date());
+        window.gtag("config", gaMeasurementId);
+      </script>
+      <script is:inline>
+        (() => {
+          const clean = (value) => (typeof value === "string" ? value.trim() : "");
+          const compact = (payload) =>
+            Object.fromEntries(Object.entries(payload).filter(([, value]) => value !== "" && value !== undefined));
+
+          const track = (eventName, payload = {}) => {
+            if (!eventName || typeof window.gtag !== "function") return;
+            window.gtag(
+              "event",
+              eventName,
+              compact({
+                transport_type: "beacon",
+                ...payload
+              })
+            );
+          };
+
+          window["pvTrackEvent"] = track;
+
+          document.addEventListener("click", (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            const element = target?.closest("[data-analytics-event]");
+            if (!element) return;
+
+            const eventName = clean(element.getAttribute("data-analytics-event"));
+            const eventLabel =
+              clean(element.getAttribute("data-analytics-label")) || clean(element.textContent) || undefined;
+            const linkUrl = element instanceof HTMLAnchorElement ? element.href : undefined;
+
+            track(eventName, {
+              event_category: clean(element.getAttribute("data-analytics-category")) || "engagement",
+              event_label: eventLabel,
+              cta_location: clean(element.getAttribute("data-analytics-location")),
+              link_url: linkUrl
+            });
+          });
+
+        })();
+      </script>
+    </>
+  )
+}

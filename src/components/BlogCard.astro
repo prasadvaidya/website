@@ -1,0 +1,82 @@
+---
+import { formatDate } from "../utils/site";
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  readingTime: string;
+  category: string;
+  tags: string[];
+}
+
+const { href, title, description, pubDate, readingTime, category, tags } = Astro.props;
+---
+
+<article class="card blog-card">
+  <a
+    href={href}
+    aria-label={`Read ${title}`}
+    data-analytics-event="writing_click"
+    data-analytics-category="writing"
+    data-analytics-label={title}
+    data-analytics-location="blog_card"
+  >
+    <div class="blog-meta">
+      <span>{category}</span>
+      <span>{formatDate(pubDate)}</span>
+      <span>{readingTime}</span>
+    </div>
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <div class="tags" aria-label="Post tags">
+      {tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+    </div>
+  </a>
+</article>
+
+<style>
+  .blog-card a {
+    display: grid;
+    height: 100%;
+    gap: 0.85rem;
+    padding: 1.2rem;
+  }
+
+  .blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.8rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.18rem;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: auto;
+  }
+
+  .tags span {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.25rem 0.52rem;
+  }
+</style>

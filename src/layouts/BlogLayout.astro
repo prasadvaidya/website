@@ -1,0 +1,163 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { absoluteUrl, site } from "../utils/site";
+import { formatDate } from "../utils/site";
+import { personReference } from "../utils/seo";
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate?: Date;
+  updatedDate?: Date;
+  readingTime?: string;
+  category?: string;
+  tags?: string[];
+  canonical?: string;
+  audience?: string;
+  problem?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  readingTime,
+  category,
+  tags = [],
+  canonical,
+  audience,
+  problem,
+  ctaLabel,
+  ctaHref
+} = Astro.props;
+const canonicalPath = canonical ?? Astro.url.pathname;
+const canonicalUrl = canonicalPath.startsWith("http") ? canonicalPath : absoluteUrl(canonicalPath);
+const hasValidationCta = Boolean(ctaLabel && ctaHref);
+const blogPostingStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  url: canonicalUrl,
+  mainEntityOfPage: canonicalUrl,
+  datePublished: pubDate?.toISOString(),
+  dateModified: (updatedDate ?? pubDate)?.toISOString(),
+  author: personReference(),
+  publisher: personReference(),
+  keywords: tags,
+  articleSection: category,
+  image: absoluteUrl("/og-default.png"),
+  audience: audience ? { "@type": "Audience", audienceType: audience } : undefined,
+  about: problem,
+  inLanguage: "en",
+  isPartOf: {
+    "@type": "Blog",
+    name: `${site.name} Writing`,
+    url: absoluteUrl("/writing/")
+  }
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonicalPath}
+  ogType="article"
+  articlePublishedTime={pubDate?.toISOString()}
+  articleModifiedTime={(updatedDate ?? pubDate)?.toISOString()}
+  articleSection={category}
+  articleTags={tags}
+  structuredData={blogPostingStructuredData}
+>
+  <article class="article">
+    <header class="container article-header">
+      <a class="text-link" href="/writing/">Back to writing</a>
+      {category && <p class="eyebrow">{category}</p>}
+      <h1>{title}</h1>
+      <p>{description}</p>
+      <div class="article-meta">
+        {pubDate && <span>{formatDate(pubDate)}</span>}
+        {readingTime && <span>{readingTime}</span>}
+      </div>
+      <div class="tags" aria-label="Post tags">
+        {tags.map((tag) => <span>{tag}</span>)}
+      </div>
+    </header>
+    <div class="container article-body prose-custom">
+      <slot />
+    </div>
+    {
+      hasValidationCta && (
+        <div class="container article-cta">
+          <a
+            class="button button-primary"
+            href={ctaHref}
+            data-analytics-event="idea_interest_click"
+            data-analytics-category="validation"
+            data-analytics-label={ctaLabel}
+            data-analytics-location="article_footer"
+          >
+            {ctaLabel}
+          </a>
+        </div>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  .article-header {
+    padding-block: clamp(3.5rem, 9vw, 7rem) 2rem;
+  }
+
+  .article-header .eyebrow {
+    margin-top: 2rem;
+  }
+
+  h1 {
+    max-width: 58rem;
+    margin: 0.5rem 0 0;
+    font-size: clamp(2.4rem, 7vw, 5.4rem);
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  .article-header p:not(.eyebrow) {
+    max-width: 48rem;
+    color: var(--muted);
+    font-size: clamp(1.06rem, 2vw, 1.25rem);
+  }
+
+  .article-meta,
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .article-meta span,
+  .tags span {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 750;
+    padding: 0.28rem 0.58rem;
+  }
+
+  .article-body {
+    max-width: 760px;
+  }
+
+  .article-cta {
+    max-width: 760px;
+    padding-top: 2rem;
+  }
+</style>
