@@ -26,7 +26,7 @@ const {
   description = site.description,
   canonical = Astro.url.pathname,
   image = "/og-default.png",
-  imageAlt = `${site.name} - Software Architecture, AI Systems, and Product Engineering`,
+  imageAlt = `${site.name} - Technical Architect & Builder`,
   ogType = "website",
   articlePublishedTime,
   articleModifiedTime,
@@ -64,8 +64,8 @@ const structuredDataJson = serializeJsonLd(structuredDataItems);
     <link rel="canonical" href={canonicalUrl} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title="Prasad Vaidya writing" href="/rss.xml" />
-    <meta name="theme-color" content="#f7f7f2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0d0d0b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fdfdfb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131312" media="(prefers-color-scheme: dark)" />
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
@@ -94,12 +94,6 @@ const structuredDataJson = serializeJsonLd(structuredDataItems);
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline type="application/ld+json" set:html={structuredDataJson} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&family=JetBrains+Mono:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
     <script is:inline>
       const storedTheme = localStorage.getItem("theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;

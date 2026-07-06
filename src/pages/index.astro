@@ -1,567 +1,164 @@
 ---
 import { getCollection } from "astro:content";
-import CTA from "../components/CTA.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { sortByDate } from "../utils/site";
+import { formatDate, site, sortByDate, sortProjectsByMaturity } from "../utils/site";
 
 const posts = sortByDate((await getCollection("blog")).filter((post) => !post.data.draft));
-const projects = (await getCollection("projects")).filter((project) => project.data.featured).slice(0, 6);
-
-const writingGroups = [
-  { label: "Architecture Notes", category: "Software Architecture", href: "/writing/#software-architecture" },
-  { label: "AI Engineering", category: "AI Engineering", href: "/writing/#ai-engineering" },
-  { label: "Local LLM Experiments", category: "Local LLMs", href: "/writing/#local-llms" },
-  { label: "SaaS Building", category: "SaaS Building", href: "/writing/#saas-building" },
-  { label: "Engineering Leadership", category: "Engineering Leadership", href: "/writing/#engineering-leadership" },
-  { label: "Personal Systems", category: "Personal Systems", href: "/writing/#personal-systems" }
-].map((group) => ({
-  ...group,
-  post: posts.find((post) => post.data.category === group.category)
-}));
-
-const exploring = [
-  "AI-native SaaS products",
-  "Personal knowledge systems",
-  "Local LLM workflows",
-  "Software architecture",
-  "Health transformation",
-  "Guitar and music theory",
-  "Entrepreneurship"
-];
-
-const featuredWork = [
-  {
-    title: "Software Architecture",
-    text: "Principles for systems that stay understandable under growth, operational pressure, and team change.",
-    href: "/work/"
-  },
-  {
-    title: "Agentic Workflows",
-    text: "Designing constrained automation loops for email, tasks, lead funnels, and developer workflows.",
-    href: "/projects/"
-  },
-  {
-    title: "Developer Productivity",
-    text: "Improving engineering throughput with clearer tools, feedback loops, documentation, and defaults.",
-    href: "/writing/"
-  }
-];
-
-const lifeCards = [
-  {
-    title: "Health",
-    text: "Health as a long-term engineering project.",
-    href: "/life/#health"
-  },
-  {
-    title: "Music",
-    text: "Exploring guitar, jazz, and disciplined practice.",
-    href: "/life/#music"
-  },
-  {
-    title: "Entrepreneurship",
-    text: "Building independent products and documenting the journey.",
-    href: "/life/#entrepreneurship"
-  }
-];
+const projects = sortProjectsByMaturity(await getCollection("projects"));
 ---
 
 <BaseLayout>
-  <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy animate-fade-up">
-        <p class="eyebrow">Software Architecture / AI Systems / Product Engineering</p>
-        <h1>Prasad Vaidya</h1>
-        <p class="description">
-          I help startups build products and write about software architecture, AI systems,
-          product engineering, and the personal systems behind sustained technical craft. This is
-          a working archive of notes, projects, experiments, and decision frameworks.
-        </p>
-        <div class="hero-actions">
-          <a
-            class="button button-primary"
-            href="/writing/"
-            data-analytics-event="read_writing_click"
-            data-analytics-category="cta"
-            data-analytics-label="Read writing"
-            data-analytics-location="hero"
-          >
-            Read writing
-          </a>
-          <a
-            class="button button-secondary"
-            href="/projects/"
-            data-analytics-event="view_projects_click"
-            data-analytics-category="cta"
-            data-analytics-label="Explore projects"
-            data-analytics-location="hero"
-          >
-            Explore projects
-          </a>
-        </div>
-      </div>
+  <div class="container home">
+    <section class="intro">
+      <h1>Prasad Vaidya</h1>
+      <p>
+        I'm a technical architect. I design backend systems and SaaS platforms for
+        startups, and most of my time now goes to AI products, both for the companies
+        I work with and in tools I build for myself.
+      </p>
+      <p>
+        Away from the keyboard I'm learning jazz guitar, building health, and
+        working out what it takes to ship products of my own. This site is where I
+        keep track of all of it.
+      </p>
+    </section>
 
-      <aside class="hero-panel surface" aria-label="Positioning summary">
-        <h2>
-          A technical architect's digital garden for systems, experiments, and technical judgment.
-        </h2>
-        <dl>
-          <div>
-            <dt>Focus</dt>
-            <dd>SaaS, AI products, backend platforms</dd>
-          </div>
-          <div>
-            <dt>Output</dt>
-            <dd>Notes, projects, architecture decisions, build logs</dd>
-          </div>
-          <div>
-            <dt>Lens</dt>
-            <dd>Technical clarity with founder-level tradeoffs</dd>
-          </div>
-        </dl>
-      </aside>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container">
-      <div class="section-heading">
-        <p class="eyebrow">Currently Exploring</p>
-        <h2>Systems across work, health, music, and entrepreneurship.</h2>
-      </div>
-      <div class="pill-grid" aria-label="Current exploration topics">
-        {exploring.map((item) => <span>{item}</span>)}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-heading split">
-        <div>
-          <p class="eyebrow">Technical Themes</p>
-          <h2>Architecture, AI systems, and product engineering.</h2>
-        </div>
-        <a
-          class="text-link"
-          href="/work/"
-          data-analytics-event="cta_click"
-          data-analytics-category="cta"
-          data-analytics-label="Read architecture"
-          data-analytics-location="featured_work"
-        >
-          Read architecture
-        </a>
-      </div>
-      <div class="feature-grid">
-        {
-          featuredWork.map((item) => (
-            <article class="card feature-card">
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-              <a
-                class="text-link"
-                href={item.href}
-                data-analytics-event="cta_click"
-                data-analytics-category="featured_work"
-                data-analytics-label={item.title}
-                data-analytics-location="featured_work_card"
-              >
-                Read more
-              </a>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-heading split">
-        <div>
-          <p class="eyebrow">Writing Preview</p>
-          <h2>Technical notes and decision frameworks.</h2>
-        </div>
-        <a
-          class="button button-secondary"
-          href="/writing/"
-          data-analytics-event="read_writing_click"
-          data-analytics-category="cta"
-          data-analytics-label="Read writing"
-          data-analytics-location="writing_preview"
-        >
-          Read writing
-        </a>
-      </div>
-      {
-        posts.length === 0 ? (
-          <div class="surface writing-empty">
-            <p class="eyebrow">Coming Soon</p>
-            <h3></h3>
-          </div>
-        ) : (
-          <div class="writing-grid">
-            {writingGroups.map((group) => (
-              <article class="card writing-group">
-                <a
-                  href={group.post ? `/writing/${group.post.id}/` : group.href}
-                  data-analytics-event="writing_click"
-                  data-analytics-category="writing"
-                  data-analytics-label={group.label}
-                  data-analytics-location="writing_preview"
-                >
-                  <span>{group.label}</span>
-                  <h3>{group.post?.data.title ?? `${group.label} archive`}</h3>
-                  <p>{group.post?.data.description ?? "A collected index of notes in this theme."}</p>
-                  <small>{group.post?.data.readingTime ?? "Draft"}</small>
-                </a>
-              </article>
-            ))}
-          </div>
-        )
-      }
-    </div>
-  </section>
-
-  <section class="section project-band">
-    <div class="container">
-      <div class="section-heading split">
-        <div>
-          <p class="eyebrow">Selected Projects</p>
-          <h2>Applied systems and experiments with practical architecture depth.</h2>
-        </div>
-        <a
-          class="button button-secondary"
-          href="/projects/"
-          data-analytics-event="view_projects_click"
-          data-analytics-category="cta"
-          data-analytics-label="View projects"
-          data-analytics-location="selected_projects"
-        >
-          View projects
-        </a>
-      </div>
-      <div class="project-grid">
+    <section>
+      <h2>Projects</h2>
+      <ul class="item-list">
         {
           projects.map((project) => (
-            <ProjectCard
-              href={`/projects/${project.id}/`}
-              title={project.data.title}
-              problem={project.data.problem}
-              whyItMatters={project.data.whyItMatters}
-              stack={project.data.stack}
-              status={project.data.status}
-            />
+            <li>
+              <p class="item-title">
+                <a class="link" href={`/projects/${project.id}/`}>
+                  {project.data.title}
+                </a>
+                <span class="item-status">({project.data.status.toLowerCase()})</span>
+              </p>
+              <p class="item-desc">{project.data.description}</p>
+            </li>
           ))
         }
-      </div>
-    </div>
-  </section>
+      </ul>
+    </section>
 
-  <section class="section-tight">
-    <div class="container">
-      <div class="section-heading">
-        <p class="eyebrow">Life Systems</p>
-        <h2>Personal work that supports professional depth.</h2>
-      </div>
-      <div class="life-grid">
-        {
-          lifeCards.map((card) => (
-            <a
-              class="card life-card"
-              href={card.href}
-              data-analytics-event="cta_click"
-              data-analytics-category="life"
-              data-analytics-label={card.title}
-              data-analytics-location="life_preview"
-            >
-              <span>{card.title}</span>
-              <p>{card.text}</p>
-            </a>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+    <section>
+      <h2>Writing</h2>
+      {
+        posts.length === 0 ? (
+          <p>
+            Nothing published yet. The first drafts cover architecture decisions, AI
+            workflows, and the systems side of health and guitar practice. There's an
+            <a class="link" href="/rss.xml">RSS feed</a> if you'd like new notes as
+            they appear.
+          </p>
+        ) : (
+          <ul class="item-list">
+            {posts.slice(0, 5).map((post) => (
+              <li>
+                <p class="item-title">
+                  <a class="link" href={`/writing/${post.id}/`}>
+                    {post.data.title}
+                  </a>
+                  <span class="item-status">{formatDate(post.data.pubDate)}</span>
+                </p>
+              </li>
+            ))}
+            <li>
+              <p class="item-title">
+                <a class="link" href="/writing/">
+                  All writing
+                </a>
+              </p>
+            </li>
+          </ul>
+        )
+      }
+    </section>
 
-  <CTA
-    eyebrow="Start Here"
-    title="Read the architecture notes."
-    description="The writing archive is the center of this site: system design, AI workflows, product engineering, and practical technical judgment."
-    primaryLabel="Read writing"
-    primaryHref="/writing/"
-    analyticsLocation="home_final_cta"
-  />
+    <section>
+      <h2>Now</h2>
+      <p>
+        Pushing the knowledge base toward something I can use every day, running local
+        LLM experiments in the evenings, and practicing guitar most days. The{" "}
+        <a class="link" href="/now/">now page</a> has the longer version.
+      </p>
+    </section>
+
+    <section>
+      <h2>Elsewhere</h2>
+      <ul class="item-list">
+        <li>
+          <p class="item-title">
+            <a class="link" href={site.socials.github}>GitHub</a>
+            <span class="item-status">code, experiments, works in progress</span>
+          </p>
+        </li>
+        <li>
+          <p class="item-title">
+            <a class="link" href={site.socials.linkedin}>LinkedIn</a>
+            <span class="item-status">the professional record</span>
+          </p>
+        </li>
+      </ul>
+      <p class="hello">If you're building something interesting, say hello on either.</p>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .hero {
-    padding-block: clamp(4rem, 10vw, 8rem);
-  }
-
-  .hero-grid {
+  .home {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(19rem, 0.8fr);
-    align-items: end;
-    gap: clamp(2rem, 6vw, 4rem);
+    gap: clamp(2.2rem, 5vw, 3rem);
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
   h1 {
-    margin: 0.35rem 0 0;
-    font-size: clamp(4rem, 15vw, 10.8rem);
-    line-height: 0.85;
-    letter-spacing: 0;
-  }
-
-  .subtitle {
-    margin: 1.1rem 0 0;
-    color: var(--text);
-    font-size: clamp(1.3rem, 3vw, 2.1rem);
-    font-weight: 750;
-  }
-
-  .description {
-    max-width: 47rem;
-    margin: 1rem 0 0;
-    color: var(--muted);
-    font-size: clamp(1.08rem, 2vw, 1.28rem);
-  }
-
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.8rem;
-    margin-top: 1.8rem;
-  }
-
-  .hero-panel {
-    border-radius: 8px;
-    padding: 1.3rem;
-  }
-
-  .hero-panel p {
     margin: 0;
-    color: var(--accent);
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 1.25rem;
+    font-weight: 600;
   }
 
-  .hero-panel h2 {
-    margin: 0.8rem 0 1.3rem;
-    font-size: clamp(1.35rem, 2.8vw, 2rem);
-    line-height: 1.08;
+  .intro p {
+    max-width: 38rem;
+    margin: 0.9rem 0 0;
   }
 
-  .hero-panel dl {
-    display: grid;
-    gap: 0.75rem;
-    margin: 0;
-  }
-
-  .hero-panel div {
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
-  }
-
-  .hero-panel dt {
-    color: var(--text);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .hero-panel dd {
-    margin: 0.25rem 0 0;
-    color: var(--muted);
-  }
-
-  .section-heading {
-    max-width: 46rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .section-heading h2 {
-    margin: 0.35rem 0 0;
-    font-size: clamp(2rem, 4.6vw, 3.8rem);
-    line-height: 1;
-    letter-spacing: 0;
-  }
-
-  .split {
-    display: flex;
-    max-width: none;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1.25rem;
-  }
-
-  .split > div {
-    max-width: 48rem;
-  }
-
-  .pill-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-  }
-
-  .pill-grid span {
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--surface) 82%, transparent);
-    color: var(--muted);
-    font-weight: 700;
-    padding: 0.65rem 0.9rem;
-  }
-
-  .feature-grid,
-  .project-grid,
-  .writing-grid,
-  .life-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .feature-card {
-    display: grid;
-    gap: 0.8rem;
-    padding: 1.15rem;
-  }
-
-  .feature-card h3,
-  .feature-card p {
-    margin: 0;
-  }
-
-  .feature-card h3 {
-    font-size: 1.16rem;
-  }
-
-  .feature-card p {
-    color: var(--muted);
-  }
-
-  .project-band {
-    border-block: 1px solid var(--border);
-    background: color-mix(in srgb, var(--surface-muted) 38%, transparent);
-  }
-
-  .life-card {
-    display: grid;
-    gap: 0.8rem;
-    padding: 1.25rem;
-  }
-
-  .life-card span {
-    color: var(--accent-strong);
-    font-weight: 800;
-  }
-
-  .dark .life-card span {
-    color: var(--accent);
-  }
-
-  .writing-empty {
-    border-radius: 8px;
-    padding: clamp(1.25rem, 4vw, 2rem);
-  }
-
-  .writing-empty h3 {
-    margin: 0.4rem 0 0;
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
-    line-height: 1.08;
-  }
-
-  .writing-empty p:not(.eyebrow) {
-    max-width: 42rem;
-    margin: 0.75rem 0 0;
-    color: var(--muted);
-    font-size: 1.02rem;
-    line-height: 1.7;
-  }
-
-  .life-card p {
-    margin: 0;
-    color: var(--muted);
+  h2 {
+    margin: 0 0 0.9rem;
     font-size: 1.05rem;
+    font-weight: 600;
   }
 
-  .writing-group a {
+  section p {
+    max-width: 38rem;
+  }
+
+  .item-list {
     display: grid;
-    height: 100%;
-    gap: 0.75rem;
-    padding: 1.15rem;
+    gap: 1.05rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
-  .writing-group span {
-    color: var(--accent-strong);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .dark .writing-group span {
-    color: var(--accent);
-  }
-
-  .writing-group h3,
-  .writing-group p {
+  .item-title {
     margin: 0;
   }
 
-  .writing-group h3 {
-    font-size: 1.12rem;
-    line-height: 1.2;
+  .item-status {
+    margin-left: 0.45rem;
+    color: var(--muted);
+    font-size: 0.9rem;
   }
 
-  .writing-group p {
+  .item-desc {
+    margin: 0.15rem 0 0;
     color: var(--muted);
   }
 
-  .writing-group small {
-    margin-top: auto;
+  .hello {
+    margin: 1.1rem 0 0;
     color: var(--muted);
-    font-weight: 750;
-  }
-
-  @media (max-width: 980px) {
-    .hero-grid,
-    .feature-grid,
-    .project-grid,
-    .writing-grid,
-    .life-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .hero-copy {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (max-width: 680px) {
-    .hero-grid,
-    .feature-grid,
-    .project-grid,
-    .writing-grid,
-    .life-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .split {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    h1 {
-      font-size: clamp(3.4rem, 24vw, 5.8rem);
-    }
   }
 </style>

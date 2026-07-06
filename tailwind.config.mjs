@@ -14,7 +14,7 @@ export default {
           "Segoe UI",
           "sans-serif"
         ],
-        serif: ["Lora", "Georgia", "serif"],
+        serif: ["Fraunces", "Georgia", "serif"],
         mono: ["JetBrains Mono", "SFMono-Regular", "Consolas", "monospace"]
       },
       colors: {

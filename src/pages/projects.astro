@@ -1,60 +1,86 @@
 ---
 import { getCollection } from "astro:content";
-import CTA from "../components/CTA.astro";
-import PageHeader from "../components/PageHeader.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { sortProjectsByMaturity } from "../utils/site";
 
-const projects = await getCollection("projects");
+const projects = sortProjectsByMaturity(await getCollection("projects"));
 ---
 
 <BaseLayout
   title="Projects"
-  description="Products, experiments, and technical project notes from Prasad Vaidya."
+  description="Products, experiments, and prototypes by Prasad Vaidya: AI workflows, knowledge tools, local LLM experiments, and music learning tools."
 >
-  <PageHeader
-    eyebrow="Projects"
-    title="Products, experiments, and architecture notes."
-    description="A showcase of SaaS ideas, AI workflows, local LLM experiments, personal tracking tools, and music learning systems."
-  />
+  <div class="container page">
+    <h1>Projects</h1>
+    <p class="page-intro">
+      Products, experiments, and prototypes in various states of done. The status
+      labels are honest: "concept" means a folder of notes.
+    </p>
 
-  <section class="section-tight">
-    <div class="container project-grid">
+    <ul class="project-list">
       {
         projects.map((project) => (
-          <ProjectCard
-            href={`/projects/${project.id}/`}
-            title={project.data.title}
-            problem={project.data.problem}
-            whyItMatters={project.data.whyItMatters}
-            stack={project.data.stack}
-            status={project.data.status}
-          />
+          <li>
+            <h2>
+              <a class="link" href={`/projects/${project.id}/`}>
+                {project.data.title}
+              </a>
+              <span class="status">({project.data.status.toLowerCase()})</span>
+            </h2>
+            <p>{project.data.description}</p>
+            <p class="stack">Built with {project.data.stack.join(", ")}.</p>
+          </li>
         ))
       }
-    </div>
-  </section>
-
-  <CTA
-    eyebrow="Further Reading"
-    title="Read the notes behind the systems."
-    description="The writing archive explains the architecture judgment, AI workflow thinking, and product constraints behind these experiments."
-    primaryLabel="Read writing"
-    primaryHref="/writing/"
-    analyticsLocation="projects_cta"
-  />
+    </ul>
+  </div>
 </BaseLayout>
 
 <style>
-  .project-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
-  @media (max-width: 760px) {
-    .project-grid {
-      grid-template-columns: 1fr;
-    }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .page-intro {
+    max-width: 38rem;
+    margin: 0.9rem 0 0;
+    color: var(--muted);
+  }
+
+  .project-list {
+    display: grid;
+    gap: 2.2rem;
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .status {
+    margin-left: 0.45rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .project-list p {
+    max-width: 38rem;
+    margin: 0.35rem 0 0;
+  }
+
+  .stack {
+    color: var(--muted);
+    font-size: 0.9rem;
   }
 </style>

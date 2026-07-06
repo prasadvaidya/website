@@ -1,166 +1,74 @@
 ---
-import CTA from "../components/CTA.astro";
-import PageHeader from "../components/PageHeader.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-
-const values = [
-  "Clarity before complexity",
-  "Durable systems over clever systems",
-  "Technology choices grounded in business constraints",
-  "Health, music, and learning as long-term systems"
-];
-
-const collaboration = [
-  "Architecture conversations",
-  "SaaS systems",
-  "AI product architecture",
-  "Founder conversations"
-];
+import { site } from "../utils/site";
 ---
 
 <BaseLayout
   title="About"
-  description="About Prasad Vaidya, a technical architect writing about software architecture, AI systems, product engineering, and personal systems."
+  description="About Prasad Vaidya, a technical architect working on SaaS platforms, backend systems, and AI products."
 >
-  <PageHeader
-    eyebrow="About"
-    title="Technical architect building practical systems."
-    description="This website is where I document what I am building, learning, testing, and thinking about."
-  />
+  <div class="container page">
+    <h1>About</h1>
 
-  <section class="section-tight">
-    <div class="container about-grid">
-      <div class="surface intro-card">
-        <p>
-          I'm Prasad Vaidya, a technical architect with experience designing and building software
-          systems across product and engineering teams.
-        </p>
-        <p>
-          My current interests are AI-enabled products, developer productivity, personal knowledge
-          systems, SaaS architecture, and independent product building.
-        </p>
-        <p>
-          Outside software, I'm focused on health transformation, guitar, filmmaking, and
-          exploring how disciplined personal systems can create more creative freedom.
-        </p>
-        <p>
-          This website is where I document what I'm building, learning, testing, and thinking about.
-        </p>
-      </div>
+    <p>
+      I'm Prasad Vaidya, a technical architect. I've spent my career designing
+      software systems across product and engineering teams: SaaS platforms, backend
+      services, and lately AI product architecture.
+    </p>
+    <p>
+      The part of the work I care most about is keeping systems understandable. I
+      prefer simple designs that scale through clarity, chosen against real business
+      constraints rather than fashion. In practice that means writing down context,
+      making trade-offs visible, and building feedback loops so teams can move
+      without surprises.
+    </p>
+    <p>
+      Current interests: AI-enabled products, developer productivity, personal
+      knowledge systems, and the road from technical leadership to independent
+      product building.
+    </p>
+    <p>
+      Outside software I'm midway through a long health transformation, learning
+      jazz guitar, and curious about filmmaking. The common thread is that I treat
+      all of it as systems: small experiments, honest measurement, patience.
+    </p>
 
-      <aside class="quick-facts">
-        <div class="card fact-card">
-          <h2>Professional Background</h2>
-          <p>Technical architect focused on scalable backend systems, SaaS platforms, AI product architecture, and technical leadership.</p>
-        </div>
-        <div class="card fact-card">
-          <h2>Current Interests</h2>
-          <p>AI-enabled products, local LLM workflows, mental offloading systems, independent product building, and better personal systems.</p>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container list-grid">
-      <div>
-        <p class="eyebrow">Values</p>
-        <h2>How I think.</h2>
-        <ul>{values.map((value) => <li>{value}</li>)}</ul>
-      </div>
-      <div>
-        <p class="eyebrow">Conversation Interests</p>
-        <h2>What I like to discuss.</h2>
-        <ul>{collaboration.map((item) => <li>{item}</li>)}</ul>
-      </div>
-    </div>
-  </section>
-
-  <CTA
-    eyebrow="Start Here"
-    title="Read the technical notes."
-    description="The writing archive is the best entry point into how I think about architecture, AI systems, product engineering, and disciplined systems."
-    primaryLabel="Read writing"
-    primaryHref="/writing/"
-    analyticsLocation="about_cta"
-  />
+    <section id="connect">
+      <h2>Get in touch</h2>
+      <p>
+        The best places to find me are{" "}
+        <a class="link" href={site.socials.github}>GitHub</a> for code and{" "}
+        <a class="link" href={site.socials.linkedin}>LinkedIn</a> for everything
+        else. I enjoy conversations about architecture, AI products, and the founder
+        side of engineering, so say hello.
+      </p>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .about-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(17rem, 0.8fr);
-    gap: 1rem;
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
-  .intro-card {
-    border-radius: 8px;
-    padding: clamp(1.3rem, 4vw, 2rem);
+  h1 {
+    margin: 0 0 0.9rem;
+    font-size: 1.25rem;
+    font-weight: 600;
   }
 
-  .intro-card p {
-    max-width: 58rem;
-    color: var(--muted);
-    font-size: clamp(1.06rem, 2vw, 1.22rem);
+  p {
+    max-width: 38rem;
+    margin: 0 0 1.1rem;
   }
 
-  .intro-card p:first-child {
-    color: var(--text);
-    font-size: clamp(1.25rem, 2.8vw, 1.65rem);
-    font-weight: 750;
-    line-height: 1.35;
-  }
-
-  .quick-facts,
-  .list-grid {
-    display: grid;
-    gap: 1rem;
-  }
-
-  .fact-card {
-    padding: 1.2rem;
+  section {
+    margin-top: 2.2rem;
   }
 
   h2 {
-    margin: 0;
-    font-size: clamp(1.45rem, 3vw, 2.25rem);
-    line-height: 1.08;
-  }
-
-  .fact-card h2 {
-    font-size: 1.08rem;
-  }
-
-  .fact-card p {
-    margin-bottom: 0;
-    color: var(--muted);
-  }
-
-  .list-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  ul {
-    display: grid;
-    gap: 0.7rem;
-    list-style: none;
-    margin: 1rem 0 0;
-    padding: 0;
-  }
-
-  li {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--muted);
-    font-weight: 750;
-    padding: 0.85rem 0.95rem;
-  }
-
-  @media (max-width: 820px) {
-    .about-grid,
-    .list-grid {
-      grid-template-columns: 1fr;
-    }
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
   }
 </style>

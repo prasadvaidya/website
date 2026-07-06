@@ -1,0 +1,101 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const updated = "July 2026";
+---
+
+<BaseLayout
+  title="Now"
+  description="What Prasad Vaidya is focused on right now: a personal knowledge base, local LLM experiments, health, jazz guitar, and the road to independent products."
+>
+  <div class="container page">
+    <h1>Now</h1>
+    <p class="updated">What I'm focused on at the moment. Last updated {updated}.</p>
+
+    <section>
+      <h2>Building</h2>
+      <p>
+        The main project is a personal knowledge base: capture notes, voice memos,
+        and screenshots, then get the right context back when you're actually working.
+        It's at MVP and I'm pushing it toward daily use. The email-to-task workflow I
+        built earlier is live and mostly runs itself now.
+      </p>
+    </section>
+
+    <section>
+      <h2>Local models</h2>
+      <p>
+        Evenings go to OpenClaw and LM Studio, testing tool calling and agent
+        orchestration with small models on modest hardware. The point is to learn
+        where local models genuinely hold up, not to avoid paying for an API.
+      </p>
+    </section>
+
+    <section>
+      <h2>Health</h2>
+      <p>
+        Strength training, nutrition experiments, and sleep tracking. Progress is
+        boring on purpose: repeated weeks, small adjustments, nothing heroic.
+      </p>
+    </section>
+
+    <section>
+      <h2>Guitar</h2>
+      <p>
+        Jazz, slowly. I keep practice logs and do ear training instead of comfortable
+        noodling, and I keep sketching small tools that would make practice less
+        aimless.
+      </p>
+    </section>
+
+    <section>
+      <h2>Independent products</h2>
+      <p>
+        The long-term plan is to go from technical leadership to products of my own.
+        Everything above feeds into that one way or another.
+      </p>
+    </section>
+
+    <p class="note">
+      This is a <a class="link" href="https://nownownow.com/about">now page</a>.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .updated {
+    margin: 0.9rem 0 0;
+    color: var(--muted);
+  }
+
+  section {
+    margin-top: 2.2rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  section p {
+    max-width: 38rem;
+    margin: 0;
+  }
+
+  .note {
+    margin-top: 2.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+</style>
