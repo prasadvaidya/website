@@ -94,12 +94,6 @@ const structuredDataJson = serializeJsonLd(structuredDataItems);
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline type="application/ld+json" set:html={structuredDataJson} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&family=JetBrains+Mono:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
     <script is:inline>
       const storedTheme = localStorage.getItem("theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;

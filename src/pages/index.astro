@@ -70,7 +70,7 @@ const lifeCards = [
 <BaseLayout>
   <section class="hero">
     <div class="container hero-grid">
-      <div class="hero-copy animate-fade-up">
+      <div class="hero-copy">
         <p class="eyebrow">Software Architecture / AI Systems / Product Engineering</p>
         <h1>Prasad Vaidya</h1>
         <p class="description">
@@ -310,16 +310,15 @@ const lifeCards = [
 
   h1 {
     margin: 0.35rem 0 0;
-    font-size: clamp(4rem, 15vw, 10.8rem);
-    line-height: 0.85;
-    letter-spacing: 0;
+    font-size: clamp(2.75rem, 7vw, 5rem);
+    line-height: 1.05;
   }
 
   .subtitle {
     margin: 1.1rem 0 0;
     color: var(--text);
     font-size: clamp(1.3rem, 3vw, 2.1rem);
-    font-weight: 750;
+    font-weight: 700;
   }
 
   .description {
@@ -346,7 +345,7 @@ const lifeCards = [
     margin: 0;
     color: var(--accent);
     font-size: 0.78rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
@@ -371,7 +370,7 @@ const lifeCards = [
   .hero-panel dt {
     color: var(--text);
     font-size: 0.76rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
@@ -388,9 +387,8 @@ const lifeCards = [
 
   .section-heading h2 {
     margin: 0.35rem 0 0;
-    font-size: clamp(2rem, 4.6vw, 3.8rem);
-    line-height: 1;
-    letter-spacing: 0;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.15;
   }
 
   .split {
@@ -461,7 +459,7 @@ const lifeCards = [
 
   .life-card span {
     color: var(--accent-strong);
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .dark .life-card span {
@@ -503,7 +501,7 @@ const lifeCards = [
   .writing-group span {
     color: var(--accent-strong);
     font-size: 0.76rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
@@ -529,7 +527,7 @@ const lifeCards = [
   .writing-group small {
     margin-top: auto;
     color: var(--muted);
-    font-weight: 750;
+    font-weight: 700;
   }
 
   @media (max-width: 980px) {
@@ -558,10 +556,6 @@ const lifeCards = [
     .split {
       align-items: flex-start;
       flex-direction: column;
-    }
-
-    h1 {
-      font-size: clamp(3.4rem, 24vw, 5.8rem);
     }
   }
 </style>
