@@ -1,84 +1,114 @@
 ---
 import { navItems, site } from "../utils/site";
+
+const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
   <div class="container footer-inner">
-    <div class="footer-meta">
-      <a class="footer-brand" href="/">Prasad Vaidya</a>
-      <span>Architecture, AI systems, product engineering</span>
+    <div class="footer-brand">
+      <a class="brand" href="/">Prasad Vaidya<span>.</span></a>
+      <p>
+        A working notebook on software architecture, AI systems, and the
+        personal systems behind steady work.
+      </p>
     </div>
 
-    <nav class="footer-nav" aria-label="Footer navigation">
+    <nav class="footer-col" aria-label="Footer navigation">
+      <span class="col-label">Index</span>
       {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
 
-    <nav class="footer-links" aria-label="Footer links">
+    <nav class="footer-col" aria-label="Footer links">
+      <span class="col-label">Elsewhere</span>
       <a href={site.socials.github}>GitHub</a>
       <a href={site.socials.linkedin}>LinkedIn</a>
       <a href="/rss.xml">RSS</a>
     </nav>
+  </div>
+
+  <div class="container colophon">
+    <span>© {year} Prasad Vaidya</span>
+    <span>Built by hand with Astro · Set in Fraunces, Inter & JetBrains Mono</span>
   </div>
 </footer>
 
 <style>
   .site-footer {
     border-top: 1px solid var(--border);
-    background: color-mix(in srgb, var(--surface-muted) 42%, transparent);
-    padding-block: 1.3rem;
+    background: color-mix(in srgb, var(--surface-muted) 38%, transparent);
+    padding-block: clamp(2rem, 5vw, 3.25rem) 1.4rem;
   }
 
   .footer-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem 1.5rem;
-  }
-
-  .footer-meta {
     display: grid;
-    min-width: max-content;
-    gap: 0.15rem;
+    grid-template-columns: minmax(0, 1.4fr) auto auto;
+    gap: 2rem clamp(2rem, 8vw, 6rem);
   }
 
-  .footer-meta span {
+  .brand {
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.12rem;
+    font-weight: 620;
+  }
+
+  .brand span {
+    color: var(--accent);
+  }
+
+  .footer-brand p {
+    max-width: 24rem;
+    margin: 0.7rem 0 0;
     color: var(--muted);
-    font-size: 0.82rem;
-    font-weight: 650;
+    font-size: 0.92rem;
   }
 
-  .footer-brand {
-    display: inline-flex;
+  .footer-col {
+    display: grid;
+    align-content: start;
+    gap: 0.45rem;
+  }
+
+  .col-label {
+    margin-bottom: 0.35rem;
+    color: var(--accent);
+    font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .footer-col a {
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+
+  .footer-col a:hover {
     color: var(--text);
-    font-size: 0.95rem;
-    font-weight: 800;
   }
 
-  nav {
+  .colophon {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem 0.8rem;
-  }
-
-  nav a {
+    justify-content: space-between;
+    gap: 0.4rem 1.5rem;
+    margin-top: clamp(2rem, 5vw, 3rem);
+    border-top: 1px solid var(--border);
+    padding-top: 1.2rem;
     color: var(--muted);
-    font-size: 0.88rem;
-    font-weight: 650;
+    font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
+    font-size: 0.72rem;
   }
 
-  nav a:hover {
-    color: var(--text);
-  }
-
-  @media (max-width: 900px) {
+  @media (max-width: 720px) {
     .footer-inner {
-      align-items: flex-start;
-      flex-direction: column;
+      grid-template-columns: 1fr 1fr;
     }
 
-    .footer-meta {
-      min-width: 0;
+    .footer-brand {
+      grid-column: 1 / -1;
     }
   }
 </style>

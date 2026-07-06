@@ -30,6 +30,11 @@ const hasPublishedBlogPosts = hasPublishedMarkdownFiles(blogContentDir);
 export default defineConfig({
   site,
   output: "static",
+  redirects: {
+    "/work": "/about/",
+    "/life": "/now/",
+    "/contact": "/about/"
+  },
   integrations: [
     mdx(),
     tailwind({

@@ -10,9 +10,9 @@ function normalizeUrl(url: string) {
 
 export const site = {
   name: "Prasad Vaidya",
-  title: "Prasad Vaidya - Software Architecture, AI Systems, and Product Engineering",
+  title: "Prasad Vaidya - Technical Architect & Builder",
   description:
-    "A technical architect's digital garden on software architecture, AI workflows, product engineering, and disciplined personal systems.",
+    "The working notebook of Prasad Vaidya: software architecture, AI systems, independent products, and the personal systems behind steady work.",
   url: normalizeUrl(getPublicEnv(import.meta.env.PUBLIC_SITE_URL) || fallbackSiteUrl),
   author: "Prasad Vaidya",
   socials: {
@@ -33,13 +33,10 @@ export const analytics = {
 };
 
 export const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/work/", label: "Architecture" },
-  { href: "/writing/", label: "Writing" },
   { href: "/projects/", label: "Projects" },
-  { href: "/life/", label: "Life" },
-  { href: "/about/", label: "About" },
-  { href: "/contact/", label: "Find me" }
+  { href: "/writing/", label: "Writing" },
+  { href: "/now/", label: "Now" },
+  { href: "/about/", label: "About" }
 ];
 
 export function absoluteUrl(path = "/") {
@@ -56,4 +53,16 @@ export function formatDate(date: Date) {
 
 export function sortByDate<T extends { data: { pubDate: Date } }>(items: T[]) {
   return [...items].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+
+const statusOrder = ["live", "mvp", "beta", "research", "concept"];
+
+function statusRank(status: string) {
+  const normalized = status.toLowerCase();
+  const rank = statusOrder.findIndex((entry) => normalized.includes(entry));
+  return rank === -1 ? statusOrder.length : rank;
+}
+
+export function sortProjectsByMaturity<T extends { data: { status: string } }>(items: T[]) {
+  return [...items].sort((a, b) => statusRank(a.data.status) - statusRank(b.data.status));
 }

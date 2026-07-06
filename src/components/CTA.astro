@@ -11,8 +11,8 @@ interface Props {
 
 const {
   eyebrow = "Continue",
-  title = "Read the technical notes.",
-  description = "Explore writing on software architecture, AI workflows, product engineering, and the systems behind sustained technical craft.",
+  title = "Keep reading the notebook.",
+  description = "Projects, experiments, and notes on architecture, AI systems, and the craft of building.",
   primaryLabel = "Read writing",
   primaryHref = "/writing/",
   primaryEventName,
@@ -24,14 +24,6 @@ function defaultEventFor(label: string, href: string) {
   if (href === "/rss.xml" || normalizedLabel.includes("subscribe")) return "subscribe_click";
   if (normalizedLabel.includes("writing") || href.startsWith("/writing")) return "read_writing_click";
   if (normalizedLabel.includes("project") || href.startsWith("/projects")) return "view_projects_click";
-  if (
-    normalizedLabel.includes("work") ||
-    normalizedLabel.includes("touch") ||
-    normalizedLabel.includes("discuss") ||
-    href.startsWith("/contact")
-  ) {
-    return "cta_click";
-  }
   return "cta_click";
 }
 
@@ -62,7 +54,7 @@ const primaryAnalyticsEvent = primaryEventName ?? defaultEventFor(primaryLabel, 
 
 <style>
   .cta-section {
-    padding-block: clamp(3rem, 7vw, 5rem);
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
   }
 
   .cta-card {
@@ -71,24 +63,23 @@ const primaryAnalyticsEvent = primaryEventName ?? defaultEventFor(primaryLabel, 
     align-items: center;
     gap: 2rem;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    background:
-      linear-gradient(135deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-muted) 72%, transparent));
-    padding: clamp(1.4rem, 4vw, 2.3rem);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    padding: clamp(1.5rem, 4vw, 2.4rem);
   }
 
   h2 {
-    max-width: 48rem;
-    margin: 0.35rem 0 0;
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    line-height: 1.05;
+    max-width: 44rem;
+    margin: 0.6rem 0 0;
+    font-size: clamp(1.7rem, 3.6vw, 2.6rem);
+    line-height: 1.08;
   }
 
   p:not(.eyebrow) {
-    max-width: 43rem;
-    margin: 1rem 0 0;
+    max-width: 40rem;
+    margin: 0.8rem 0 0;
     color: var(--muted);
-    font-size: 1.04rem;
+    font-size: 1.02rem;
   }
 
   .cta-actions {
@@ -98,7 +89,7 @@ const primaryAnalyticsEvent = primaryEventName ?? defaultEventFor(primaryLabel, 
     gap: 0.8rem;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 720px) {
     .cta-card {
       grid-template-columns: 1fr;
     }

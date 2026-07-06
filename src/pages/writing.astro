@@ -16,43 +16,68 @@ const categories = [
   "Developer Productivity",
   "Personal Systems"
 ];
+
+const plannedNotes = [
+  { topic: "Software Architecture", line: "Systems that survive growth, pressure, and team change." },
+  { topic: "AI Engineering", line: "Bounded agentic workflows with explicit failure modes." },
+  { topic: "Local LLMs", line: "What small models can really do, measured on real hardware." },
+  { topic: "SaaS Building", line: "Build logs from the road to independent products." },
+  { topic: "Engineering Leadership", line: "Calm technical direction and decisions written down." },
+  { topic: "Developer Productivity", line: "Tools, defaults, and feedback loops that reduce drag." },
+  { topic: "Personal Systems", line: "Health, music, and habits as engineering projects." }
+];
 ---
 
 <BaseLayout
   title="Writing"
-  description="Technical blog and long-form thinking by Prasad Vaidya on architecture, AI engineering, SaaS, leadership, and personal systems."
+  description="Notes by Prasad Vaidya on software architecture, AI engineering, local LLMs, SaaS building, engineering leadership, and personal systems."
   noindex={posts.length === 0}
 >
   <PageHeader
     eyebrow="Writing"
-    title="Notes on software, AI, leadership, and personal systems."
-    description="A technical blog and digital garden for architecture notes, AI engineering experiments, SaaS building, engineering leadership, developer productivity, and disciplined personal systems."
+    title="Notes from the <em>workbench</em>."
+    description="Long-form notes and decision frameworks: architecture judgment, AI workflows, build logs, and the personal systems that keep the work steady."
   />
 
   <section class="section-tight">
     <div class="container writing-list">
-      {posts.length === 0 && (
-        <section class="empty-writing surface" aria-labelledby="empty-writing-title">
-          <p class="eyebrow">Coming Soon</p>
-          <h2 id="empty-writing-title">Notes will be added here.</h2>
-          <p>
-            Posts will cover architecture,
-            AI systems, product engineering, developer productivity, and personal systems.
-          </p>
-        </section>
-      )}
+      {
+        posts.length === 0 && (
+          <div class="empty-writing">
+            <div class="section-label">
+              <span class="index">--</span>
+              <span class="name">Coming soon</span>
+            </div>
+            <h2>The first entries are being drafted.</h2>
+            <p>
+              This is the index they'll fill. Subscribe to the
+              <a href="/rss.xml">RSS feed</a> to catch the first one.
+            </p>
+            <ol class="planned-list">
+              {plannedNotes.map((note) => (
+                <li>
+                  <span class="planned-topic">{note.topic}</span>
+                  <span class="planned-line">{note.line}</span>
+                  <span class="chip">soon</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      }
 
-      {posts.length > 0 &&
+      {
+        posts.length > 0 &&
         categories.map((category) => {
           const categoryPosts = posts.filter((post) => post.data.category === category);
           if (categoryPosts.length === 0) return null;
           return (
             <section id={category.toLowerCase().replaceAll(" ", "-")} class="category-section">
-              <div class="category-heading">
-                <p class="eyebrow">Category</p>
-                <h2>{category}</h2>
+              <div class="section-label">
+                <span class="index">§</span>
+                <span class="name">{category}</span>
               </div>
-              <div class="post-grid">
+              <div class="post-list">
                 {categoryPosts.map((post) => (
                   <BlogCard
                     href={`/writing/${post.id}/`}
@@ -67,14 +92,15 @@ const categories = [
               </div>
             </section>
           );
-        })}
+        })
+      }
     </div>
   </section>
 
   <CTA
-    eyebrow="Next"
-    title="Explore the projects behind the notes."
-    description="The project archive connects the writing to concrete systems, product experiments, local model workflows, and personal tools."
+    eyebrow="Meanwhile"
+    title="The projects are already here."
+    description="The workbench holds the systems these notes will describe — AI workflows, knowledge tools, and local model experiments."
     primaryLabel="View projects"
     primaryHref="/projects/"
     analyticsLocation="writing_cta"
@@ -84,51 +110,86 @@ const categories = [
 <style>
   .writing-list {
     display: grid;
-    gap: clamp(2.5rem, 7vw, 5rem);
+    gap: clamp(2.5rem, 6vw, 4rem);
   }
 
-  .empty-writing {
-    border-radius: 8px;
-    padding: clamp(1.25rem, 4vw, 2rem);
+  .empty-writing h2 {
+    margin: 1.4rem 0 0;
+    font-size: clamp(1.9rem, 4.2vw, 3rem);
+    line-height: 1.05;
   }
 
-  .empty-writing p:not(.eyebrow) {
+  .empty-writing > p {
     max-width: 42rem;
-    margin: 0.75rem 0 0;
+    margin: 1rem 0 1.8rem;
     color: var(--muted);
-    font-size: 1.02rem;
-    line-height: 1.7;
+    font-size: 1.05rem;
+  }
+
+  .empty-writing > p a {
+    color: var(--accent-strong);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  :global(.dark) .empty-writing > p a {
+    color: var(--accent);
+  }
+
+  .planned-list {
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .planned-list li {
+    display: grid;
+    grid-template-columns: minmax(11rem, 0.45fr) minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+    padding: 0.95rem 0.5rem;
+  }
+
+  .planned-list li:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .planned-topic {
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.08rem;
+    font-weight: 580;
+  }
+
+  .planned-line {
+    color: var(--muted);
+    font-size: 0.95rem;
   }
 
   .category-section {
     scroll-margin-top: 6rem;
   }
 
-  .category-heading {
-    margin-bottom: 1rem;
-  }
-
-  h2 {
-    margin: 0.28rem 0 0;
-    font-size: clamp(1.75rem, 3.4vw, 2.8rem);
-    line-height: 1.05;
-  }
-
-  .post-grid {
+  .post-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    margin-top: 1.2rem;
   }
 
-  @media (max-width: 940px) {
-    .post-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (max-width: 720px) {
+    .planned-list li {
+      grid-template-columns: minmax(0, 1fr) auto;
     }
-  }
 
-  @media (max-width: 640px) {
-    .post-grid {
-      grid-template-columns: 1fr;
+    .planned-list li .chip {
+      grid-row: 1;
+      grid-column: 2;
+      justify-self: end;
+    }
+
+    .planned-line {
+      grid-column: 1 / -1;
     }
   }
 </style>
