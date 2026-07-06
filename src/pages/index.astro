@@ -1,468 +1,164 @@
 ---
 import { getCollection } from "astro:content";
-import BlogCard from "../components/BlogCard.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { site, sortByDate, sortProjectsByMaturity } from "../utils/site";
+import { formatDate, site, sortByDate, sortProjectsByMaturity } from "../utils/site";
 
 const posts = sortByDate((await getCollection("blog")).filter((post) => !post.data.draft));
-const projects = sortProjectsByMaturity(
-  (await getCollection("projects")).filter((project) => project.data.featured)
-).slice(0, 4);
-
-const nowThreads = [
-  {
-    label: "Building",
-    status: "MVP",
-    text: "A personal knowledge base that captures notes, audio, and screenshots — and hands the context back when you need it."
-  },
-  {
-    label: "Experimenting",
-    status: "Research",
-    text: "Local LLMs on constrained hardware: tool calling, agent orchestration, and where small models actually earn their keep."
-  },
-  {
-    label: "Practicing",
-    status: "Daily",
-    text: "Jazz guitar and music theory as deliberate practice — logs, feedback loops, and slow, honest progress."
-  }
-];
-
-const plannedNotes = [
-  { topic: "Software Architecture", line: "Systems that survive growth, pressure, and team change." },
-  { topic: "AI Engineering", line: "Bounded agentic workflows with explicit failure modes." },
-  { topic: "Local LLMs", line: "What small models can really do, measured on real hardware." },
-  { topic: "SaaS Building", line: "Build logs from the road to independent products." },
-  { topic: "Engineering Leadership", line: "Calm technical direction and decisions written down." },
-  { topic: "Personal Systems", line: "Health, music, and habits as engineering projects." }
-];
-
-const offClock = [
-  {
-    title: "Health",
-    text: "A long-term engineering project: strength training, nutrition experiments, sleep data, and boring consistency."
-  },
-  {
-    title: "Music",
-    text: "Guitar and jazz — a study in taste, timing, and the discipline of doing hard things slowly."
-  },
-  {
-    title: "Independence",
-    text: "The path from technical leadership to products of my own, documented honestly as it happens."
-  }
-];
+const projects = sortProjectsByMaturity(await getCollection("projects"));
 ---
 
 <BaseLayout>
-  <section class="hero">
-    <div class="container">
-      <p class="eyebrow animate-fade-up">Prasad Vaidya — Technical Architect &amp; Builder</p>
-      <h1 class="animate-fade-up">Clarity before <em>complexity</em>.</h1>
-      <p class="hero-lede animate-fade-up">
-        I design software architecture for SaaS and AI products, build my own tools on the
-        side, and apply the same systems thinking to health, guitar, and the slow road to
-        independent products. This site is my working notebook.
+  <div class="container home">
+    <section class="intro">
+      <h1>Prasad Vaidya</h1>
+      <p>
+        I'm a technical architect. I design backend systems and SaaS platforms for
+        startups, and most of my time now goes to AI products, both for the companies
+        I work with and in tools I build for myself.
       </p>
-      <div class="hero-actions animate-fade-up">
-        <a
-          class="button button-primary"
-          href="/projects/"
-          data-analytics-event="view_projects_click"
-          data-analytics-category="cta"
-          data-analytics-label="Browse projects"
-          data-analytics-location="hero"
-        >
-          Browse projects
-        </a>
-        <a
-          class="button button-secondary"
-          href="/now/"
-          data-analytics-event="cta_click"
-          data-analytics-category="cta"
-          data-analytics-label="What I'm doing now"
-          data-analytics-location="hero"
-        >
-          What I'm doing now
-        </a>
-      </div>
-    </div>
-  </section>
+      <p>
+        Away from the keyboard I'm learning jazz guitar, building health, and
+        working out what it takes to ship products of my own. This site is where I
+        keep track of all of it.
+      </p>
+    </section>
 
-  <section class="section-tight" aria-labelledby="now-heading">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">01</span>
-        <span class="name">Now</span>
-      </div>
-      <div class="section-head">
-        <h2 id="now-heading">Three threads I'm pulling on.</h2>
-        <a class="text-link" href="/now/">The full now page</a>
-      </div>
-      <div class="now-grid">
+    <section>
+      <h2>Projects</h2>
+      <ul class="item-list">
         {
-          nowThreads.map((thread) => (
-            <article class="card now-card">
-              <div class="now-top">
-                <span class="eyebrow">{thread.label}</span>
-                <span class="chip chip-accent">{thread.status}</span>
-              </div>
-              <p>{thread.text}</p>
-            </article>
+          projects.map((project) => (
+            <li>
+              <p class="item-title">
+                <a class="link" href={`/projects/${project.id}/`}>
+                  {project.data.title}
+                </a>
+                <span class="item-status">({project.data.status.toLowerCase()})</span>
+              </p>
+              <p class="item-desc">{project.data.description}</p>
+            </li>
           ))
         }
-      </div>
-    </div>
-  </section>
+      </ul>
+    </section>
 
-  <section class="section" aria-labelledby="projects-heading">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">02</span>
-        <span class="name">Projects</span>
-      </div>
-      <div class="section-head">
-        <h2 id="projects-heading">Things I've built and broken in.</h2>
-        <a class="text-link" href="/projects/">All projects</a>
-      </div>
-      <div class="project-list">
-        {
-          projects.map((project, index) => (
-            <ProjectCard
-              href={`/projects/${project.id}/`}
-              title={project.data.title}
-              problem={project.data.problem}
-              stack={project.data.stack}
-              status={project.data.status}
-              index={index}
-            />
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight" aria-labelledby="notes-heading">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">03</span>
-        <span class="name">Notes</span>
-      </div>
+    <section>
+      <h2>Writing</h2>
       {
         posts.length === 0 ? (
-          <>
-            <div class="section-head">
-              <h2 id="notes-heading">The notebook opens soon.</h2>
-              <a
-                class="text-link"
-                href="/rss.xml"
-                data-analytics-event="subscribe_click"
-                data-analytics-category="cta"
-                data-analytics-label="Subscribe via RSS"
-                data-analytics-location="notes_preview"
-              >
-                Subscribe via RSS
-              </a>
-            </div>
-            <p class="notes-intro">
-              Long-form notes on architecture decisions, AI workflows, and the systems behind
-              steady work. The first entries are being drafted — this is the index they'll fill.
-            </p>
-            <ol class="planned-list">
-              {plannedNotes.map((note) => (
-                <li>
-                  <span class="planned-topic">{note.topic}</span>
-                  <span class="planned-line">{note.line}</span>
-                  <span class="chip">soon</span>
-                </li>
-              ))}
-            </ol>
-          </>
+          <p>
+            Nothing published yet. The first drafts cover architecture decisions, AI
+            workflows, and the systems side of health and guitar practice. There's an
+            <a class="link" href="/rss.xml">RSS feed</a> if you'd like new notes as
+            they appear.
+          </p>
         ) : (
-          <>
-            <div class="section-head">
-              <h2 id="notes-heading">Recent notes from the workbench.</h2>
-              <a class="text-link" href="/writing/">All writing</a>
-            </div>
-            <div class="post-list">
-              {posts.slice(0, 4).map((post) => (
-                <BlogCard
-                  href={`/writing/${post.id}/`}
-                  title={post.data.title}
-                  description={post.data.description}
-                  pubDate={post.data.pubDate}
-                  readingTime={post.data.readingTime}
-                  category={post.data.category}
-                  tags={post.data.tags}
-                />
-              ))}
-            </div>
-          </>
+          <ul class="item-list">
+            {posts.slice(0, 5).map((post) => (
+              <li>
+                <p class="item-title">
+                  <a class="link" href={`/writing/${post.id}/`}>
+                    {post.data.title}
+                  </a>
+                  <span class="item-status">{formatDate(post.data.pubDate)}</span>
+                </p>
+              </li>
+            ))}
+            <li>
+              <p class="item-title">
+                <a class="link" href="/writing/">
+                  All writing
+                </a>
+              </p>
+            </li>
+          </ul>
         )
       }
-    </div>
-  </section>
+    </section>
 
-  <section class="section" aria-labelledby="offclock-heading">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">04</span>
-        <span class="name">Off the clock</span>
-      </div>
-      <div class="section-head">
-        <h2 id="offclock-heading">The same discipline, different domains.</h2>
-      </div>
-      <div class="off-grid">
-        {
-          offClock.map((item) => (
-            <a
-              class="card off-card"
-              href="/now/"
-              data-analytics-event="cta_click"
-              data-analytics-category="life"
-              data-analytics-label={item.title}
-              data-analytics-location="off_the_clock"
-            >
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </a>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+    <section>
+      <h2>Now</h2>
+      <p>
+        Pushing the knowledge base toward something I can use every day, running local
+        LLM experiments in the evenings, and practicing guitar most days. The{" "}
+        <a class="link" href="/now/">now page</a> has the longer version.
+      </p>
+    </section>
 
-  <section class="section-tight connect" aria-labelledby="connect-heading">
-    <div class="container connect-inner">
-      <div>
-        <p class="eyebrow">Say hello</p>
-        <h2 id="connect-heading">Working on something interesting?</h2>
-        <p>
-          I like talking about architecture, AI products, and the craft of building.
-          Find me where the work lives.
-        </p>
-      </div>
-      <div class="connect-actions">
-        <a
-          class="button button-primary"
-          href={site.socials.github}
-          data-analytics-event="profile_click"
-          data-analytics-category="profile"
-          data-analytics-label="GitHub"
-          data-analytics-location="home_connect"
-        >
-          GitHub
-        </a>
-        <a
-          class="button button-secondary"
-          href={site.socials.linkedin}
-          data-analytics-event="profile_click"
-          data-analytics-category="profile"
-          data-analytics-label="LinkedIn"
-          data-analytics-location="home_connect"
-        >
-          LinkedIn
-        </a>
-      </div>
-    </div>
-  </section>
+    <section>
+      <h2>Elsewhere</h2>
+      <ul class="item-list">
+        <li>
+          <p class="item-title">
+            <a class="link" href={site.socials.github}>GitHub</a>
+            <span class="item-status">code, experiments, works in progress</span>
+          </p>
+        </li>
+        <li>
+          <p class="item-title">
+            <a class="link" href={site.socials.linkedin}>LinkedIn</a>
+            <span class="item-status">the professional record</span>
+          </p>
+        </li>
+      </ul>
+      <p class="hello">If you're building something interesting, say hello on either.</p>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .hero {
-    padding-block: clamp(4.5rem, 12vw, 9rem) clamp(3.5rem, 8vw, 6rem);
+  .home {
+    display: grid;
+    gap: clamp(2.2rem, 5vw, 3rem);
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
-  .hero h1 {
-    max-width: 60rem;
-    margin: 1.2rem 0 0;
-    font-size: clamp(3.2rem, 10vw, 7.5rem);
-    line-height: 0.98;
-  }
-
-  .hero h1 em {
-    color: var(--accent);
-  }
-
-  .hero-lede {
-    max-width: 46rem;
-    margin: 1.6rem 0 0;
-    color: var(--muted);
-    font-size: clamp(1.08rem, 2vw, 1.3rem);
-    line-height: 1.7;
-    animation-delay: 90ms;
-  }
-
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-top: 2.2rem;
-    animation-delay: 160ms;
-  }
-
-  .section-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.8rem 2rem;
-    margin: 1.6rem 0 1.8rem;
-  }
-
-  .section-head h2 {
-    max-width: 44rem;
+  h1 {
     margin: 0;
-    font-size: clamp(1.9rem, 4.2vw, 3.1rem);
-    line-height: 1.05;
+    font-size: 1.25rem;
+    font-weight: 600;
   }
 
-  .now-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+  .intro p {
+    max-width: 38rem;
+    margin: 0.9rem 0 0;
   }
 
-  .now-card {
-    display: grid;
-    align-content: start;
-    gap: 0.9rem;
-    padding: 1.4rem;
-  }
-
-  .now-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem;
-  }
-
-  .now-card p {
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.65;
-  }
-
-  .project-list,
-  .post-list {
-    display: grid;
-  }
-
-  .notes-intro {
-    max-width: 44rem;
-    margin: -0.6rem 0 1.6rem;
-    color: var(--muted);
+  h2 {
+    margin: 0 0 0.9rem;
     font-size: 1.05rem;
+    font-weight: 600;
   }
 
-  .planned-list {
+  section p {
+    max-width: 38rem;
+  }
+
+  .item-list {
     display: grid;
+    gap: 1.05rem;
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
-  .planned-list li {
-    display: grid;
-    grid-template-columns: minmax(11rem, 0.45fr) minmax(0, 1fr) auto;
-    align-items: baseline;
-    gap: 0.5rem 1.5rem;
-    border-top: 1px solid var(--border);
-    padding: 0.95rem 0.5rem;
-  }
-
-  .planned-list li:last-child {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .planned-topic {
-    font-family: Fraunces, Georgia, serif;
-    font-size: 1.08rem;
-    font-weight: 580;
-  }
-
-  .planned-line {
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
-
-  .off-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .off-card {
-    display: grid;
-    align-content: start;
-    gap: 0.7rem;
-    padding: 1.4rem;
-  }
-
-  .off-card h3 {
+  .item-title {
     margin: 0;
-    font-size: 1.35rem;
   }
 
-  .off-card p {
-    margin: 0;
+  .item-status {
+    margin-left: 0.45rem;
     color: var(--muted);
-    line-height: 1.65;
+    font-size: 0.9rem;
   }
 
-  .connect {
-    border-top: 1px solid var(--border);
-    background: color-mix(in srgb, var(--surface-muted) 38%, transparent);
-  }
-
-  .connect-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  .connect h2 {
-    max-width: 40rem;
-    margin: 0.7rem 0 0;
-    font-size: clamp(1.9rem, 4vw, 2.9rem);
-    line-height: 1.05;
-  }
-
-  .connect p:not(.eyebrow) {
-    max-width: 38rem;
-    margin: 0.9rem 0 0;
+  .item-desc {
+    margin: 0.15rem 0 0;
     color: var(--muted);
-    font-size: 1.02rem;
   }
 
-  .connect-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-  }
-
-  @media (max-width: 900px) {
-    .now-grid,
-    .off-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .planned-list li {
-      grid-template-columns: minmax(0, 1fr) auto;
-    }
-
-    .planned-list li .chip {
-      grid-row: 1;
-      grid-column: 2;
-      justify-self: end;
-    }
-
-    .planned-line {
-      grid-column: 1 / -1;
-    }
-
-    .connect-inner {
-      grid-template-columns: 1fr;
-    }
+  .hello {
+    margin: 1.1rem 0 0;
+    color: var(--muted);
   }
 </style>

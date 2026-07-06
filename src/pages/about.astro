@@ -1,290 +1,74 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHeader from "../components/PageHeader.astro";
 import { site } from "../utils/site";
-
-const strengths = [
-  "System design",
-  "Cloud-native architecture",
-  "Backend engineering",
-  "AI product architecture",
-  "SaaS platforms",
-  "Technical leadership",
-  "Performance & scalability",
-  "Developer tooling"
-];
-
-const values = [
-  {
-    title: "Clarity before complexity",
-    text: "Simple systems that scale through understanding, not accidental cleverness."
-  },
-  {
-    title: "Durable over clever",
-    text: "The best architecture is the one a team can still reason about three years in."
-  },
-  {
-    title: "Constraints are information",
-    text: "Business reality, team size, and operating load shape the right design — not fashion."
-  },
-  {
-    title: "Everything is a system",
-    text: "Health, music practice, and writing respond to the same feedback loops software does."
-  }
-];
-
-const profileLinks = [
-  {
-    label: "GitHub",
-    href: site.socials.github,
-    eyebrow: "Code & experiments",
-    description: "Projects, prototypes, and work-in-progress."
-  },
-  {
-    label: "LinkedIn",
-    href: site.socials.linkedin,
-    eyebrow: "Professional context",
-    description: "Career, background, and professional updates."
-  }
-];
 ---
 
 <BaseLayout
   title="About"
-  description="About Prasad Vaidya — a technical architect designing SaaS and AI systems, building independent products, and writing down the judgment behind both."
+  description="About Prasad Vaidya, a technical architect working on SaaS platforms, backend systems, and AI products."
 >
-  <PageHeader
-    eyebrow="About"
-    title="Architect by trade, <em>builder</em> by temperament."
-    description="I've spent my career designing software systems across product and engineering teams. These days I split my energy between architecture work for startups and products of my own."
-  />
+  <div class="container page">
+    <h1>About</h1>
 
-  <section class="section-tight">
-    <div class="container story">
-      <div class="section-label">
-        <span class="index">01</span>
-        <span class="name">The short version</span>
-      </div>
-      <div class="story-body">
-        <p class="lead">
-          I'm Prasad Vaidya, a technical architect focused on SaaS platforms, backend
-          systems, and AI product architecture.
-        </p>
-        <p>
-          My current professional interests are AI-enabled products, developer productivity,
-          personal knowledge systems, and the road from technical leadership to independent
-          product building. I care about the shape of systems, but just as much about the
-          operating model around them: who changes them, how failures surface, and how teams
-          make decisions.
-        </p>
-        <p>
-          Outside software, I'm mid-way through a long health transformation, learning jazz
-          guitar with deliberate structure, and exploring filmmaking. The common thread is
-          disciplined personal systems that buy creative freedom — this site documents all
-          of it as it happens.
-        </p>
-      </div>
-    </div>
-  </section>
+    <p>
+      I'm Prasad Vaidya, a technical architect. I've spent my career designing
+      software systems across product and engineering teams: SaaS platforms, backend
+      services, and lately AI product architecture.
+    </p>
+    <p>
+      The part of the work I care most about is keeping systems understandable. I
+      prefer simple designs that scale through clarity, chosen against real business
+      constraints rather than fashion. In practice that means writing down context,
+      making trade-offs visible, and building feedback loops so teams can move
+      without surprises.
+    </p>
+    <p>
+      Current interests: AI-enabled products, developer productivity, personal
+      knowledge systems, and the road from technical leadership to independent
+      product building.
+    </p>
+    <p>
+      Outside software I'm midway through a long health transformation, learning
+      jazz guitar, and curious about filmmaking. The common thread is that I treat
+      all of it as systems: small experiments, honest measurement, patience.
+    </p>
 
-  <section class="section-tight">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">02</span>
-        <span class="name">How I work</span>
-      </div>
-      <blockquote class="philosophy">
-        I prefer simple systems that scale through clarity first. My work focuses on reducing
-        operational risk, improving developer velocity, and choosing technology based on
-        business constraints — not novelty.
-      </blockquote>
-      <div class="work-copy">
-        <p>
-          In practice that means writing down context, making constraints visible, establishing
-          feedback loops, and turning ambiguity into practical next steps. The goal is never to
-          win architecture debates — it's to reduce uncertainty, protect future options, and
-          help teams ship reliable software with less operational surprise.
-        </p>
-      </div>
-      <div class="strength-grid" aria-label="Technical strengths">
-        {strengths.map((strength) => <span class="chip">{strength}</span>)}
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">03</span>
-        <span class="name">Operating principles</span>
-      </div>
-      <div class="values-grid">
-        {
-          values.map((value) => (
-            <article class="value">
-              <h2>{value.title}</h2>
-              <p>{value.text}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight connect" id="connect">
-    <div class="container">
-      <div class="section-label">
-        <span class="index">04</span>
-        <span class="name">Connect</span>
-      </div>
-      <div class="connect-head">
-        <h2>Find me where the work lives.</h2>
-        <p>
-          I enjoy conversations about architecture, AI products, SaaS systems, and the
-          founder's side of engineering. No contact forms — just the two places I actually am.
-        </p>
-      </div>
-      <div class="profile-grid" aria-label="Profile links">
-        {
-          profileLinks.map((link) => (
-            <a
-              class="card profile-card"
-              href={link.href}
-              data-analytics-event="profile_click"
-              data-analytics-category="profile"
-              data-analytics-label={link.label}
-            >
-              <span class="eyebrow">{link.eyebrow}</span>
-              <h3>{link.label}</h3>
-              <p>{link.description}</p>
-            </a>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+    <section id="connect">
+      <h2>Get in touch</h2>
+      <p>
+        The best places to find me are{" "}
+        <a class="link" href={site.socials.github}>GitHub</a> for code and{" "}
+        <a class="link" href={site.socials.linkedin}>LinkedIn</a> for everything
+        else. I enjoy conversations about architecture, AI products, and the founder
+        side of engineering, so say hello.
+      </p>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .story {
-    display: grid;
-    gap: 1.4rem;
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
-  .story-body p {
-    max-width: 46rem;
+  h1 {
+    margin: 0 0 0.9rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 38rem;
     margin: 0 0 1.1rem;
-    color: var(--muted);
+  }
+
+  section {
+    margin-top: 2.2rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
     font-size: 1.05rem;
-    line-height: 1.75;
-  }
-
-  .story-body .lead {
-    color: var(--text);
-    font-family: Fraunces, Georgia, serif;
-    font-size: clamp(1.4rem, 3vw, 1.9rem);
-    font-weight: 560;
-    line-height: 1.3;
-  }
-
-  .philosophy {
-    max-width: 52rem;
-    margin: 1.6rem 0 0;
-    color: var(--text);
-    font-family: Fraunces, Georgia, serif;
-    font-size: clamp(1.6rem, 3.6vw, 2.6rem);
-    font-style: italic;
-    font-weight: 500;
-    line-height: 1.2;
-  }
-
-  .work-copy p {
-    max-width: 46rem;
-    margin: 1.4rem 0 0;
-    color: var(--muted);
-    font-size: 1.02rem;
-    line-height: 1.7;
-  }
-
-  .strength-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1.6rem;
-  }
-
-  .values-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
-    margin-top: 1.4rem;
-  }
-
-  .value {
-    border-top: 1px solid var(--border);
-    padding: 1.4rem 0.5rem;
-  }
-
-  .value h2 {
-    margin: 0;
-    font-size: clamp(1.25rem, 2.4vw, 1.55rem);
-  }
-
-  .value p {
-    max-width: 30rem;
-    margin: 0.6rem 0 0;
-    color: var(--muted);
-    line-height: 1.65;
-  }
-
-  .connect {
-    scroll-margin-top: 5rem;
-  }
-
-  .connect-head {
-    margin: 1.4rem 0 1.6rem;
-  }
-
-  .connect-head h2 {
-    margin: 0;
-    font-size: clamp(1.9rem, 4vw, 2.9rem);
-    line-height: 1.05;
-  }
-
-  .connect-head p {
-    max-width: 42rem;
-    margin: 0.9rem 0 0;
-    color: var(--muted);
-    font-size: 1.02rem;
-  }
-
-  .profile-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .profile-card {
-    display: grid;
-    align-content: start;
-    gap: 0.7rem;
-    padding: 1.5rem;
-  }
-
-  .profile-card h3 {
-    margin: 0;
-    font-size: clamp(1.5rem, 3vw, 2rem);
-  }
-
-  .profile-card p {
-    margin: 0;
-    color: var(--muted);
-  }
-
-  @media (max-width: 720px) {
-    .values-grid,
-    .profile-grid {
-      grid-template-columns: 1fr;
-    }
+    font-weight: 600;
   }
 </style>

@@ -4,26 +4,26 @@
 
 :root {
   color-scheme: light;
-  --background: #faf7f0;
-  --surface: #fffdf7;
-  --surface-muted: #f1ebdd;
-  --border: #e3dbc8;
-  --text: #201b15;
-  --muted: #6e6557;
-  --accent: #b4451c;
-  --accent-strong: #8a3212;
+  --background: #fdfdfb;
+  --surface: #f6f5f1;
+  --surface-muted: #efede7;
+  --border: #e6e4dd;
+  --text: #1c1c1a;
+  --muted: #6f6d66;
+  --accent: #2b5fd9;
+  --accent-strong: #1f4bb0;
 }
 
 .dark {
   color-scheme: dark;
-  --background: #141210;
-  --surface: #1d1a16;
-  --surface-muted: #29241e;
-  --border: #3b342a;
-  --text: #f3eee3;
-  --muted: #a89d8b;
-  --accent: #e88a55;
-  --accent-strong: #f5c9a8;
+  --background: #131312;
+  --surface: #1d1d1b;
+  --surface-muted: #262624;
+  --border: #33332f;
+  --text: #e9e7e1;
+  --muted: #a19e95;
+  --accent: #8fb0f0;
+  --accent-strong: #b7cdf7;
 }
 
 * {
@@ -31,7 +31,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   background: var(--background);
   color: var(--text);
 }
@@ -39,33 +38,21 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at 85% -5%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 34rem),
-    var(--background);
+  background: var(--background);
   color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
-  line-height: 1.65;
+  line-height: 1.7;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-}
-
-body.menu-open {
-  overflow: hidden;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: Fraunces, Georgia, "Times New Roman", serif;
-  font-weight: 560;
-  letter-spacing: -0.015em;
-}
-
-em,
-i {
-  font-family: Fraunces, Georgia, serif;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 a {
@@ -87,192 +74,35 @@ select {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
+/* One narrow column, like a page of writing */
 .container {
-  width: min(100% - 2.5rem, 1060px);
+  width: min(100% - 2.5rem, 42rem);
   margin-inline: auto;
 }
 
-.section {
-  padding-block: clamp(3.5rem, 8vw, 6.5rem);
-}
-
-.section-tight {
-  padding-block: clamp(2.25rem, 5vw, 4rem);
-}
-
-/* Mono metadata layer: eyebrows, section indexes, chips */
-.eyebrow {
+/* Links inside content: quiet blue, underlined */
+.link {
   color: var(--accent);
-  font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-underline-offset: 0.18em;
 }
 
-.section-label {
-  display: flex;
-  align-items: baseline;
-  gap: 0.9rem;
-  border-top: 1px solid var(--border);
-  padding-top: 1rem;
-  font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.section-label .index {
-  color: var(--accent);
-}
-
-.section-label .name {
-  color: var(--muted);
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--surface) 70%, transparent);
-  color: var(--muted);
-  font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-  font-size: 0.72rem;
-  font-weight: 500;
-  padding: 0.22rem 0.5rem;
-  white-space: nowrap;
-}
-
-.chip-accent {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.link:hover {
+  color: var(--accent-strong);
+  text-decoration-color: currentColor;
 }
 
 .muted {
   color: var(--muted);
-}
-
-.surface {
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  border: 1px solid var(--border);
-}
-
-.button {
-  display: inline-flex;
-  min-height: 2.8rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  border-radius: 4px;
-  border: 1px solid transparent;
-  padding: 0.72rem 1.15rem;
-  font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1.1;
-  transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    background 160ms ease,
-    color 160ms ease;
-}
-
-.button:hover {
-  transform: translateY(-1px);
-}
-
-.button-primary {
-  background: var(--text);
-  color: var(--background);
-}
-
-.button-primary:hover {
-  background: var(--accent-strong);
-}
-
-.dark .button-primary:hover {
-  background: var(--accent);
-  color: var(--background);
-}
-
-.button-secondary {
-  border-color: var(--border);
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
-  color: var(--text);
-}
-
-.button-secondary:hover {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-}
-
-.text-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--accent-strong);
-  font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.text-link::after {
-  content: "→";
-  transition: transform 160ms ease;
-}
-
-.text-link:hover::after {
-  transform: translateX(3px);
-}
-
-.dark .text-link {
-  color: var(--accent);
-}
-
-.card {
-  height: 100%;
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  border: 1px solid var(--border);
-  transition:
-    border-color 160ms ease,
-    transform 160ms ease,
-    background 160ms ease;
-}
-
-.card:hover {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-  transform: translateY(-2px);
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-up {
-  animation: fade-up 520ms ease both;
 }
 
 .prose-custom {
@@ -281,66 +111,63 @@ select {
 
 .prose-custom :where(h2, h3, h4) {
   color: var(--text);
-  line-height: 1.15;
 }
 
 .prose-custom :where(h2) {
-  margin-top: 2.4rem;
-  margin-bottom: 0.8rem;
-  font-size: clamp(1.55rem, 2.4vw, 2rem);
+  margin-top: 2.2rem;
+  margin-bottom: 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 
 .prose-custom :where(h3) {
-  margin-top: 1.8rem;
-  margin-bottom: 0.55rem;
-  font-size: 1.25rem;
+  margin-top: 1.6rem;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .prose-custom :where(p, li) {
-  color: var(--muted);
-}
-
-.prose-custom :where(strong) {
   color: var(--text);
 }
 
 .prose-custom :where(a) {
-  color: var(--accent-strong);
-  font-weight: 600;
+  color: var(--accent);
   text-decoration: underline;
-  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-underline-offset: 0.18em;
 }
 
-.dark .prose-custom :where(a) {
-  color: var(--accent);
+.prose-custom :where(a):hover {
+  color: var(--accent-strong);
+  text-decoration-color: currentColor;
 }
 
 .prose-custom :where(ul, ol) {
-  padding-left: 1.25rem;
+  padding-left: 1.4rem;
 }
 
 .prose-custom :where(blockquote) {
   margin-inline: 0;
-  border-left: 3px solid var(--accent);
+  border-left: 2px solid var(--border);
   padding-left: 1rem;
-  color: var(--text);
-  font-family: Fraunces, Georgia, serif;
-  font-style: italic;
+  color: var(--muted);
 }
 
 .prose-custom :where(code) {
-  border-radius: 0.35rem;
+  border-radius: 4px;
   background: var(--surface-muted);
-  padding: 0.15rem 0.35rem;
-  font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-  font-size: 0.88em;
+  padding: 0.12rem 0.32rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86em;
 }
 
 .prose-custom :where(pre) {
   overflow-x: auto;
   border-radius: 6px;
   border: 1px solid var(--border);
-  padding: 1rem;
+  padding: 0.9rem 1rem;
+  line-height: 1.55;
 }
 
 .prose-custom :where(pre code) {

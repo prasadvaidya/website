@@ -1,6 +1,5 @@
 ---
 import { getCollection, render } from "astro:content";
-import CTA from "../../components/CTA.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { absoluteUrl } from "../../utils/site";
 import { personReference } from "../../utils/seo";
@@ -36,154 +35,51 @@ const projectStructuredData = {
   canonical={canonical}
   structuredData={projectStructuredData}
 >
-  <article class="project-detail">
-    <header class="container detail-header">
-      <a class="text-link back-link" href="/projects/">Back to projects</a>
-      <p class="eyebrow">Project</p>
-      <h1>{project.data.title}</h1>
-      <p>{project.data.description}</p>
-      <div class="meta-row">
-        <span>{project.data.status}</span>
-        {project.data.stack.map((item) => <span>{item}</span>)}
-      </div>
-    </header>
-
-    <div class="container detail-grid">
-      <aside class="summary surface">
-        <h2>Project Summary</h2>
-        <dl>
-          <div>
-            <dt>Problem</dt>
-            <dd>{project.data.problem}</dd>
-          </div>
-          <div>
-            <dt>Why it matters</dt>
-            <dd>{project.data.whyItMatters}</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd>{project.data.status}</dd>
-          </div>
-        </dl>
-      </aside>
-      <div class="prose-custom project-body">
-        <Content />
-      </div>
+  <article class="container page">
+    <p class="back">
+      <a class="link" href="/projects/">← Projects</a>
+    </p>
+    <h1>{project.data.title}</h1>
+    <p class="lede">{project.data.description}</p>
+    <p class="meta">
+      Status: {project.data.status.toLowerCase()} · {project.data.stack.join(", ")}
+    </p>
+    <div class="prose-custom body">
+      <Content />
     </div>
   </article>
-
-  <CTA
-    eyebrow="Further Reading"
-    title="Read related technical notes."
-    description="The writing archive expands on the architecture patterns, product constraints, and AI workflow decisions behind these projects."
-    primaryLabel="Read writing"
-    primaryHref="/writing/"
-    primaryEventName="read_writing_click"
-    analyticsLocation="project_detail_cta"
-  />
 </BaseLayout>
 
 <style>
-  .project-detail {
-    padding-bottom: 2rem;
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
-  .detail-header {
-    padding-block: clamp(3.5rem, 9vw, 7rem) 2rem;
-  }
-
-  .detail-header .eyebrow {
-    margin-top: 2rem;
-  }
-
-  .back-link::after {
-    content: none;
-  }
-
-  .back-link::before {
-    content: "←";
+  .back {
+    margin: 0 0 2rem;
+    font-size: 0.9rem;
   }
 
   h1 {
-    max-width: 62rem;
-    margin: 0.45rem 0 0;
-    font-size: clamp(2.5rem, 7vw, 5.8rem);
-    line-height: 0.98;
-    letter-spacing: 0;
-  }
-
-  .detail-header p:not(.eyebrow) {
-    max-width: 50rem;
-    color: var(--muted);
-    font-size: clamp(1.05rem, 2vw, 1.24rem);
-  }
-
-  .meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .meta-row span {
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--muted);
-    font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-    font-size: 0.72rem;
-    font-weight: 500;
-    padding: 0.24rem 0.5rem;
-  }
-
-  .detail-grid {
-    display: grid;
-    grid-template-columns: minmax(17rem, 0.55fr) minmax(0, 1fr);
-    align-items: start;
-    gap: clamp(1.5rem, 5vw, 3rem);
-  }
-
-  .summary {
-    position: sticky;
-    top: 6rem;
-    border-radius: 8px;
-    padding: 1.15rem;
-  }
-
-  .summary h2 {
-    margin: 0 0 1rem;
-    font-size: 1rem;
-  }
-
-  dl {
-    display: grid;
-    gap: 0.9rem;
     margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
   }
 
-  dt {
-    color: var(--text);
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  dd {
-    margin: 0.22rem 0 0;
+  .lede {
+    max-width: 38rem;
+    margin: 0.7rem 0 0;
     color: var(--muted);
   }
 
-  .project-body {
-    max-width: 760px;
+  .meta {
+    margin: 0.7rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
   }
 
-  @media (max-width: 860px) {
-    .detail-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .summary {
-      position: static;
-    }
+  .body {
+    max-width: 38rem;
+    margin-top: 2rem;
   }
 </style>

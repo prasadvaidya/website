@@ -1,175 +1,101 @@
 ---
-import PageHeader from "../components/PageHeader.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const updated = "July 2026";
-
-const threads = [
-  {
-    id: "building",
-    label: "Building",
-    title: "A personal knowledge base, from idea to MVP.",
-    text: "Developers and knowledge workers lose context across meetings, notes, screenshots, and task tools. I'm building a capture-and-retrieval system — notes, audio transcription, OCR — that hands you the right context at the moment of work. The agentic email-to-task workflow that came out of the same itch is already live.",
-    topics: ["Capture & retrieval", "LLM classification", "OCR + transcription", "Email-to-task workflow"]
-  },
-  {
-    id: "experimenting",
-    label: "Experimenting",
-    title: "Finding out what local models actually earn.",
-    text: "Hosted frontier models are easy; the interesting constraints are local. I'm running experiments with OpenClaw, LM Studio, and local GGUF models on modest hardware — tool calling, agent orchestration, prompt contracts — to learn where private, offline workflows genuinely hold up.",
-    topics: ["OpenClaw", "LM Studio", "Tool calling", "Constrained hardware"]
-  },
-  {
-    id: "health",
-    label: "Health",
-    title: "Treating health like a system, not a sprint.",
-    text: "A long-term transformation project run like an engineering one: strength training, nutrition experiments, sleep tracking, and habit consistency. Progress is measured in boring, repeated weeks — the same way reliable systems are built.",
-    topics: ["Strength training", "Nutrition experiments", "Sleep tracking", "Habit consistency"]
-  },
-  {
-    id: "music",
-    label: "Music",
-    title: "Learning jazz guitar, slowly and on purpose.",
-    text: "Guitar practice with deliberate structure: theory, ear training, practice logs, and honest feedback loops instead of comfortable noodling. It's also a product itch — I keep sketching small tools for pitch feedback and structured practice.",
-    topics: ["Guitar", "Jazz & theory", "Practice logs", "Ear training"]
-  },
-  {
-    id: "independence",
-    label: "Independence",
-    title: "Walking from technical leadership toward my own products.",
-    text: "The long game: turning years of architecture judgment into independent products. Small bets, real users, lessons written down — the entrepreneurship thread ties everything else on this page together.",
-    topics: ["Product ideas", "SaaS experiments", "Lessons learned"]
-  }
-];
 ---
 
 <BaseLayout
   title="Now"
-  description="What Prasad Vaidya is focused on right now: building an AI-native knowledge base, local LLM experiments, health, jazz guitar, and the road to independent products."
+  description="What Prasad Vaidya is focused on right now: a personal knowledge base, local LLM experiments, health, jazz guitar, and the road to independent products."
 >
-  <PageHeader
-    eyebrow="Now"
-    title="What I'm focused on <em>right now</em>."
-    description="A living snapshot of current work and life, updated when things actually change — not a feed, a checkpoint."
-  />
+  <div class="container page">
+    <h1>Now</h1>
+    <p class="updated">What I'm focused on at the moment. Last updated {updated}.</p>
 
-  <section class="section-tight">
-    <div class="container">
-      <p class="updated chip">Last updated · {updated}</p>
-
-      <div class="threads">
-        {
-          threads.map((thread, index) => (
-            <article class="thread" id={thread.id}>
-              <div class="thread-label">
-                <span class="index">{String(index + 1).padStart(2, "0")}</span>
-                <span class="name">{thread.label}</span>
-              </div>
-              <div class="thread-body">
-                <h2>{thread.title}</h2>
-                <p>{thread.text}</p>
-                <div class="topics">
-                  {thread.topics.map((topic) => (
-                    <span class="chip">{topic}</span>
-                  ))}
-                </div>
-              </div>
-            </article>
-          ))
-        }
-      </div>
-
-      <p class="now-note">
-        This is a <a href="https://nownownow.com/about">now page</a> — a public answer to
-        "what are you focused on at this point in your life?"
+    <section>
+      <h2>Building</h2>
+      <p>
+        The main project is a personal knowledge base: capture notes, voice memos,
+        and screenshots, then get the right context back when you're actually working.
+        It's at MVP and I'm pushing it toward daily use. The email-to-task workflow I
+        built earlier is live and mostly runs itself now.
       </p>
-    </div>
-  </section>
+    </section>
+
+    <section>
+      <h2>Local models</h2>
+      <p>
+        Evenings go to OpenClaw and LM Studio, testing tool calling and agent
+        orchestration with small models on modest hardware. The point is to learn
+        where local models genuinely hold up, not to avoid paying for an API.
+      </p>
+    </section>
+
+    <section>
+      <h2>Health</h2>
+      <p>
+        Strength training, nutrition experiments, and sleep tracking. Progress is
+        boring on purpose: repeated weeks, small adjustments, nothing heroic.
+      </p>
+    </section>
+
+    <section>
+      <h2>Guitar</h2>
+      <p>
+        Jazz, slowly. I keep practice logs and do ear training instead of comfortable
+        noodling, and I keep sketching small tools that would make practice less
+        aimless.
+      </p>
+    </section>
+
+    <section>
+      <h2>Independent products</h2>
+      <p>
+        The long-term plan is to go from technical leadership to products of my own.
+        Everything above feeds into that one way or another.
+      </p>
+    </section>
+
+    <p class="note">
+      This is a <a class="link" href="https://nownownow.com/about">now page</a>.
+    </p>
+  </div>
 </BaseLayout>
 
 <style>
-  .updated {
-    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
   }
 
-  .threads {
-    display: grid;
-  }
-
-  .thread {
-    display: grid;
-    grid-template-columns: minmax(9rem, 0.28fr) minmax(0, 1fr);
-    gap: 1rem clamp(1.5rem, 5vw, 3.5rem);
-    border-top: 1px solid var(--border);
-    padding-block: clamp(1.8rem, 4vw, 2.8rem);
-    scroll-margin-top: 6rem;
-  }
-
-  .thread:last-child {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .thread-label {
-    display: flex;
-    align-items: baseline;
-    gap: 0.8rem;
-    font-family: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
-    font-size: 0.74rem;
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
     font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
   }
 
-  .thread-label .index {
-    color: var(--accent);
-  }
-
-  .thread-label .name {
+  .updated {
+    margin: 0.9rem 0 0;
     color: var(--muted);
   }
 
-  .thread-body h2 {
+  section {
+    margin-top: 2.2rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  section p {
     max-width: 38rem;
     margin: 0;
-    font-size: clamp(1.6rem, 3.4vw, 2.4rem);
-    line-height: 1.1;
   }
 
-  .thread-body p {
-    max-width: 44rem;
-    margin: 1rem 0 0;
+  .note {
+    margin-top: 2.5rem;
     color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .topics {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin-top: 1.2rem;
-  }
-
-  .now-note {
-    margin: clamp(1.8rem, 4vw, 2.5rem) 0 0;
-    color: var(--muted);
-    font-size: 0.92rem;
-  }
-
-  .now-note a {
-    color: var(--accent-strong);
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  :global(.dark) .now-note a {
-    color: var(--accent);
-  }
-
-  @media (max-width: 720px) {
-    .thread {
-      grid-template-columns: 1fr;
-      gap: 0.8rem;
-    }
+    font-size: 0.9rem;
   }
 </style>
