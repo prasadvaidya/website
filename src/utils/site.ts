@@ -32,7 +32,12 @@ export const analytics = {
   gaMeasurementId: getPublicEnv(import.meta.env.PUBLIC_GA_MEASUREMENT_ID)
 };
 
+export const forms = {
+  web3FormsAccessKey: getPublicEnv(import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY)
+};
+
 export const navItems = [
+  { href: "/products/", label: "Products" },
   { href: "/projects/", label: "Projects" },
   { href: "/writing/", label: "Writing" },
   { href: "/now/", label: "Now" },

@@ -17,6 +17,7 @@ interface Props {
   articleModifiedTime?: string;
   articleSection?: string;
   articleTags?: string[];
+  keywords?: string[];
   structuredData?: StructuredData;
   noindex?: boolean;
 }
@@ -32,6 +33,7 @@ const {
   articleModifiedTime,
   articleSection,
   articleTags = [],
+  keywords = [],
   structuredData,
   noindex = false
 } = Astro.props;
@@ -59,6 +61,7 @@ const structuredDataJson = serializeJsonLd(structuredDataItems);
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(", ")} />}
     {noindex && <meta name="robots" content="noindex, follow" />}
     {seo.googleSiteVerification && <meta name="google-site-verification" content={seo.googleSiteVerification} />}
     <link rel="canonical" href={canonicalUrl} />

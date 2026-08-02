@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Mental Offloading Early Access"
+  description="Your interest in the mental offloading early-access program has been registered."
+  canonical="/products/mental-offloading/thanks/"
+  noindex
+>
+  <section class="thanks-shell">
+    <p class="eyebrow">Registration received</p>
+    <h1>Your place is saved.</h1>
+    <p>
+      Thank you for joining the mental offloading early-access list. I will share concise progress
+      updates and reach out when the next validation or testing group opens.
+    </p>
+    <a href="/products/mental-offloading/">Explore the mental offloading concept →</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks-shell {
+    width: min(100% - 2.5rem, 42rem);
+    margin-inline: auto;
+    padding: clamp(5rem, 14vw, 9rem) 0;
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0.55rem 0 1rem;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    letter-spacing: -0.045em;
+  }
+
+  .thanks-shell > p:not(.eyebrow) {
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 1.08rem;
+    line-height: 1.75;
+  }
+
+  a {
+    display: inline-block;
+    margin-top: 2rem;
+    font-weight: 650;
+  }
+</style>

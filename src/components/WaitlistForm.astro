@@ -1,0 +1,177 @@
+---
+import { forms } from "../utils/site";
+
+interface Props {
+  action: string;
+  buttonLabel: string;
+  incentive: string;
+  productId: string;
+  funnelName: string;
+  source: string;
+  redirectUrl?: string;
+  compact?: boolean;
+}
+
+const {
+  action,
+  buttonLabel,
+  incentive,
+  productId,
+  funnelName,
+  source,
+  redirectUrl,
+  compact = false
+} = Astro.props;
+const inputId = `waitlist-email-${compact ? "compact" : "hero"}`;
+const ctaLocation = compact ? "final" : "hero";
+const isConfigured = Boolean(forms.web3FormsAccessKey);
+---
+
+<form class:list={["waitlist-form", { compact }]} action={action} method="post">
+  <input type="hidden" name="access_key" value={forms.web3FormsAccessKey} />
+  <input type="hidden" name="product" value={productId} />
+  <input type="hidden" name="funnel" value={funnelName} />
+  <input type="hidden" name="source" value={source} />
+  <input type="hidden" name="cta_location" value={ctaLocation} />
+  <input type="hidden" name="subject" value={`Waitlist signup: ${funnelName}`} />
+  <input type="hidden" name="landing_page" value="" />
+  <input type="hidden" name="referrer" value="" />
+  <input type="hidden" name="utm_source" value="" />
+  <input type="hidden" name="utm_medium" value="" />
+  <input type="hidden" name="utm_campaign" value="" />
+  <input type="hidden" name="utm_content" value="" />
+  <input type="hidden" name="utm_term" value="" />
+  {redirectUrl && <input type="hidden" name="redirect" value={redirectUrl} />}
+  <input class="botcheck" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+  <label class="sr-only" for={inputId}>Email address</label>
+  <div class="form-row">
+    <input
+      id={inputId}
+      name="email"
+      type="email"
+      inputmode="email"
+      autocomplete="email"
+      placeholder="you@example.com"
+      aria-describedby={`${inputId}-note`}
+      required
+    />
+    <button type="submit" disabled={!isConfigured}>
+      {isConfigured ? buttonLabel : "Waitlist opening soon"}
+    </button>
+  </div>
+  <p id={`${inputId}-note`} class="form-note">
+    <span>{isConfigured ? incentive : "The registration connection is being configured."}</span>
+  </p>
+</form>
+
+<script>
+  const attributionFields = [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content",
+    "utm_term"
+  ];
+
+  for (const form of document.querySelectorAll<HTMLFormElement>(".waitlist-form")) {
+    const setField = (name: string, value: string) => {
+      const field = form.elements.namedItem(name);
+      if (field instanceof HTMLInputElement) field.value = value;
+    };
+
+    const searchParams = new URLSearchParams(window.location.search);
+    setField("landing_page", window.location.href);
+    setField("referrer", document.referrer);
+    for (const field of attributionFields) setField(field, searchParams.get(field) ?? "");
+  }
+</script>
+
+<style>
+  .waitlist-form {
+    width: min(100%, 36rem);
+  }
+
+  .form-row {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  input[type="email"] {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--background);
+    color: var(--text);
+    padding: 0.78rem 0.9rem;
+  }
+
+  input[type="email"]::placeholder {
+    color: var(--muted);
+  }
+
+  button {
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.78rem 1rem;
+  }
+
+  button:hover {
+    border-color: var(--accent-strong);
+    background: var(--accent-strong);
+  }
+
+  button:disabled {
+    border-color: var(--border);
+    background: var(--muted);
+    cursor: not-allowed;
+  }
+
+  .form-note {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.2rem 1rem;
+    margin: 0.55rem 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .compact .form-note {
+    justify-content: center;
+  }
+
+  .botcheck {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 34rem) {
+    .form-row {
+      flex-direction: column;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+</style>
