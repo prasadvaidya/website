@@ -1,0 +1,581 @@
+---
+import { getCollection, render } from "astro:content";
+import WaitlistForm from "../../components/WaitlistForm.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { absoluteUrl } from "../../utils/site";
+import { personReference } from "../../utils/seo";
+
+export async function getStaticPaths() {
+  const products = (await getCollection("products")).filter((product) => !product.data.draft);
+  return products.map((product) => {
+    const rootProductId = product.data.parentProduct ?? product.id;
+    const parentProduct = product.data.parentProduct
+      ? products.find((candidate) => candidate.id === product.data.parentProduct)
+      : undefined;
+    const relatedUseCases = products.filter(
+      (candidate) =>
+        candidate.data.parentProduct === rootProductId && candidate.id !== product.id
+    );
+
+    return {
+      params: { id: product.id },
+      props: { product, parentProduct, relatedUseCases }
+    };
+  });
+}
+
+const { product, parentProduct, relatedUseCases } = Astro.props;
+const { Content } = await render(product);
+const { data } = product;
+const canonical = `/products/${product.id}/`;
+const canonicalUrl = absoluteUrl(canonical);
+const waitlist = data.mode === "waitlist" ? data.waitlist : undefined;
+const waitlistProductId = `${data.parentProduct ?? product.id}-early-access`;
+const backHref = parentProduct ? `/products/${parentProduct.id}/` : "/products/";
+const backLabel = parentProduct ? `← ${parentProduct.data.title}` : "← All products";
+const breadcrumbItems = [
+  {
+    "@type": "ListItem",
+    position: 1,
+    name: "Products",
+    item: absoluteUrl("/products/")
+  },
+  ...(parentProduct
+    ? [
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: parentProduct.data.title,
+          item: absoluteUrl(`/products/${parentProduct.id}/`)
+        }
+      ]
+    : []),
+  {
+    "@type": "ListItem",
+    position: parentProduct ? 3 : 2,
+    name: data.listingTitle ?? data.title,
+    item: canonicalUrl
+  }
+];
+
+const productStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: data.title,
+  description: data.description,
+  url: canonicalUrl,
+  category: data.category,
+  audience: {
+    "@type": "Audience",
+    audienceType: data.audience
+  },
+  keywords: data.keywords.join(", "),
+  brand: personReference(),
+  ...(data.ogImage ? { image: absoluteUrl(data.ogImage) } : {}),
+  potentialAction:
+    data.mode === "live" && data.primaryCta
+      ? {
+          "@type": "UseAction",
+          name: data.primaryCta.label,
+          target: data.primaryCta.href
+        }
+      : {
+          "@type": "RegisterAction",
+          name: data.waitlist?.buttonLabel ?? "Join the waitlist",
+          target: canonicalUrl
+        }
+};
+
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: data.faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer
+    }
+  }))
+};
+
+const breadcrumbStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbItems
+};
+---
+
+<BaseLayout
+  title={data.seoTitle}
+  description={data.description}
+  canonical={canonical}
+  image={data.ogImage}
+  imageAlt={data.ogImageAlt ?? `${data.title} product preview`}
+  keywords={data.keywords}
+  articleModifiedTime={data.updatedDate?.toISOString()}
+  structuredData={[productStructuredData, faqStructuredData, breadcrumbStructuredData]}
+>
+  <article class="funnel-shell">
+    <header class="hero">
+      <a class="back-link" href={backHref}>{backLabel}</a>
+      <p class="badge">
+        {data.badge ?? (data.mode === "live" ? "Available now" : "Accepting early interest")}
+      </p>
+      <p class="product-name">{data.title}</p>
+      <h1>{data.headline}</h1>
+      <p class="summary">{data.summary}</p>
+
+      <div class="hero-action">
+        {
+          waitlist ? (
+            <WaitlistForm
+              action={waitlist.formAction}
+              buttonLabel={waitlist.buttonLabel}
+              incentive={waitlist.incentive}
+              productId={waitlistProductId}
+              funnelName={data.title}
+              source={canonical}
+              redirectUrl={
+                waitlist.redirectUrl ?? absoluteUrl("/products/mental-offloading/thanks/")
+              }
+            />
+          ) : (
+            data.primaryCta && (
+              <div>
+                <a class="primary-button" href={data.primaryCta.href}>
+                  {data.primaryCta.label} <span aria-hidden="true">→</span>
+                </a>
+                {data.primaryCta.note && <p class="cta-note">{data.primaryCta.note}</p>}
+              </div>
+            )
+          )
+        }
+      </div>
+    </header>
+
+    {
+      data.proof.length > 0 && (
+        <section class="proof-strip" aria-label="Product evidence">
+          {data.proof.map((item) => (
+            <div>
+              <strong>{item.value}</strong>
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </section>
+      )
+    }
+
+    <section class="framing" aria-labelledby="problem-heading">
+      <div>
+        <p class="section-label">The problem</p>
+        <h2 id="problem-heading">{data.problem}</h2>
+      </div>
+      <div>
+        <p class="section-label">The outcome</p>
+        <p class="outcome">{data.outcome}</p>
+        <p class="audience">Designed for {data.audience}.</p>
+      </div>
+    </section>
+
+    {
+      relatedUseCases.length > 0 && (
+        <section class="use-cases" aria-labelledby="use-cases-heading">
+          <div class="section-heading">
+            <p class="section-label">Explore by use case</p>
+            <h2 id="use-cases-heading">
+              {parentProduct
+                ? "Another way to preserve unfinished thinking."
+                : "Choose the continuity problem you recognize."}
+            </h2>
+          </div>
+          <div class="use-case-grid">
+            {relatedUseCases.map((useCase) => (
+              <a href={`/products/${useCase.id}/`}>
+                <span>For {useCase.data.listingAudience}</span>
+                <h3>{useCase.data.listingTitle}</h3>
+                <p>{useCase.data.listingDescription}</p>
+                <strong>Explore this use case →</strong>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="benefits" aria-labelledby="benefits-heading">
+      <div class="section-heading">
+        <p class="section-label">Why it is useful</p>
+        <h2 id="benefits-heading">
+          {data.benefitsTitle ?? "A focused path from problem to progress."}
+        </h2>
+      </div>
+      <div class="benefit-grid">
+        {data.highlights.map((highlight) => (
+          <article>
+            <h3>{highlight.title}</h3>
+            <p>{highlight.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="story" aria-label={`About ${data.title}`}>
+      <div class="prose-custom story-copy">
+        <Content />
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-heading">
+      <div class="section-heading">
+        <p class="section-label">Questions</p>
+        <h2 id="faq-heading">What people usually want to know.</h2>
+      </div>
+      <div class="faq-list">
+        {data.faqs.map((faq) => (
+          <details>
+            <summary>{faq.question}</summary>
+            <p>{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="final-cta" aria-labelledby="final-cta-heading">
+      <p class="section-label">Next step</p>
+      <h2 id="final-cta-heading">
+        {data.finalCtaHeadline ??
+          (data.mode === "live" ? `Try ${data.title}.` : `Help shape ${data.title}.`)}
+      </h2>
+      <p>
+        {data.finalCtaCopy ??
+          (data.mode === "live"
+            ? data.outcome
+            : "Join the waitlist for progress updates and an invitation when early access opens.")}
+      </p>
+      {
+        waitlist ? (
+          <WaitlistForm
+            action={waitlist.formAction}
+            buttonLabel={waitlist.buttonLabel}
+            incentive={waitlist.incentive}
+            productId={waitlistProductId}
+            funnelName={data.title}
+            source={`${canonical}#final-cta`}
+            redirectUrl={
+              waitlist.redirectUrl ?? absoluteUrl("/products/mental-offloading/thanks/")
+            }
+            compact
+          />
+        ) : (
+          data.primaryCta && (
+            <a class="primary-button" href={data.primaryCta.href}>
+              {data.primaryCta.label} <span aria-hidden="true">→</span>
+            </a>
+          )
+        )
+      }
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .funnel-shell {
+    width: min(100% - 2.5rem, 68rem);
+    margin-inline: auto;
+    padding-top: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .hero {
+    max-width: 50rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 2.4rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .back-link:hover {
+    color: var(--text);
+  }
+
+  .badge,
+  .section-label {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    display: inline-block;
+    margin: 0;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    padding: 0.28rem 0.65rem;
+  }
+
+  .product-name {
+    margin: 1.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  h1 {
+    max-width: 48rem;
+    margin: 0.5rem auto 0;
+    font-size: clamp(2.2rem, 7vw, 4.4rem);
+    font-weight: 680;
+    letter-spacing: -0.045em;
+    line-height: 1.04;
+  }
+
+  .summary {
+    max-width: 42rem;
+    margin: 1.25rem auto 0;
+    color: var(--muted);
+    font-size: clamp(1.03rem, 2vw, 1.2rem);
+  }
+
+  .hero-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.8rem;
+  }
+
+  .primary-button {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 650;
+    padding: 0.78rem 1.1rem;
+  }
+
+  .primary-button:hover {
+    border-color: var(--accent-strong);
+    background: var(--accent-strong);
+  }
+
+  .cta-note {
+    margin: 0.55rem 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .proof-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1rem;
+    max-width: 54rem;
+    margin: clamp(3rem, 8vw, 5rem) auto 0;
+    border-block: 1px solid var(--border);
+    padding-block: 1.25rem;
+    text-align: center;
+  }
+
+  .proof-strip div {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .proof-strip strong {
+    font-size: 1.05rem;
+  }
+
+  .proof-strip span {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .framing,
+  .use-cases,
+  .benefits,
+  .story,
+  .faq {
+    margin-top: clamp(4rem, 10vw, 7rem);
+  }
+
+  .framing {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: clamp(2rem, 7vw, 6rem);
+  }
+
+  .section-label {
+    margin: 0 0 0.65rem;
+  }
+
+  .framing h2,
+  .section-heading h2,
+  .final-cta h2 {
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2.3rem);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+  }
+
+  .outcome {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .audience {
+    margin: 0.8rem 0 0;
+    color: var(--muted);
+  }
+
+  .section-heading {
+    max-width: 38rem;
+  }
+
+  .use-case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 0.9rem;
+    margin-top: 1.7rem;
+  }
+
+  .use-case-grid a {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 1.35rem;
+  }
+
+  .use-case-grid a:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  }
+
+  .use-case-grid span {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .use-case-grid h3 {
+    margin: 0.45rem 0 0;
+    font-size: 1.12rem;
+  }
+
+  .use-case-grid p {
+    margin: 0.55rem 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .use-case-grid strong {
+    display: inline-block;
+    margin-top: 0.9rem;
+    color: var(--accent);
+    font-size: 0.86rem;
+  }
+
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.9rem;
+    margin-top: 1.7rem;
+  }
+
+  .benefit-grid article {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 1.25rem;
+  }
+
+  .benefit-grid h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .benefit-grid p {
+    margin: 0.55rem 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .story {
+    border-block: 1px solid var(--border);
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .story-copy {
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+
+  .story-copy :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .faq-list {
+    margin-top: 1.7rem;
+    border-top: 1px solid var(--border);
+  }
+
+  details {
+    border-bottom: 1px solid var(--border);
+    padding-block: 1rem;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 620;
+    list-style-position: outside;
+    margin-left: 1.1rem;
+    padding-left: 0.25rem;
+  }
+
+  details p {
+    max-width: 45rem;
+    margin: 0.7rem 0 0 1.35rem;
+    color: var(--muted);
+  }
+
+  .final-cta {
+    display: grid;
+    justify-items: center;
+    margin-top: clamp(4rem, 10vw, 7rem);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: clamp(2rem, 6vw, 4rem) 1.2rem;
+    text-align: center;
+  }
+
+  .final-cta > p:not(.section-label) {
+    max-width: 38rem;
+    margin: 0.8rem 0 1.4rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 44rem) {
+    .framing,
+    .use-case-grid,
+    .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .framing {
+      gap: 2rem;
+    }
+
+    .proof-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
