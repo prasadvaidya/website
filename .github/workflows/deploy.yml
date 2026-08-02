@@ -20,6 +20,7 @@ jobs:
       PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
       PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN: ${{ vars.PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
       PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
+      PUBLIC_WEB3FORMS_ACCESS_KEY: ${{ vars.PUBLIC_WEB3FORMS_ACCESS_KEY }}
 
     steps:
       - name: Checkout repository
@@ -36,6 +37,13 @@ jobs:
 
       - name: Run checks
         run: npm run check
+
+      - name: Verify waitlist configuration
+        run: |
+          if [ -z "$PUBLIC_WEB3FORMS_ACCESS_KEY" ]; then
+            echo "::error::PUBLIC_WEB3FORMS_ACCESS_KEY is not available to the website environment."
+            exit 1
+          fi
 
       - name: Build website
         run: npm run build
