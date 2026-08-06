@@ -3,7 +3,6 @@ import { getCollection, render } from "astro:content";
 import WaitlistForm from "../../components/WaitlistForm.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { absoluteUrl } from "../../utils/site";
-import { personReference } from "../../utils/seo";
 
 export async function getStaticPaths() {
   const products = (await getCollection("products")).filter((product) => !product.data.draft);
@@ -58,34 +57,6 @@ const breadcrumbItems = [
   }
 ];
 
-const productStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  name: data.title,
-  description: data.description,
-  url: canonicalUrl,
-  category: data.category,
-  audience: {
-    "@type": "Audience",
-    audienceType: data.audience
-  },
-  keywords: data.keywords.join(", "),
-  brand: personReference(),
-  ...(data.ogImage ? { image: absoluteUrl(data.ogImage) } : {}),
-  potentialAction:
-    data.mode === "live" && data.primaryCta
-      ? {
-          "@type": "UseAction",
-          name: data.primaryCta.label,
-          target: data.primaryCta.href
-        }
-      : {
-          "@type": "RegisterAction",
-          name: data.waitlist?.buttonLabel ?? "Join the waitlist",
-          target: canonicalUrl
-        }
-};
-
 const faqStructuredData = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -114,7 +85,7 @@ const breadcrumbStructuredData = {
   imageAlt={data.ogImageAlt ?? `${data.title} product preview`}
   keywords={data.keywords}
   articleModifiedTime={data.updatedDate?.toISOString()}
-  structuredData={[productStructuredData, faqStructuredData, breadcrumbStructuredData]}
+  structuredData={[faqStructuredData, breadcrumbStructuredData]}
 >
   <article class="funnel-shell">
     <header class="hero">
