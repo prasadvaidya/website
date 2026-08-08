@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { formatDate, sortByDate } from "../utils/site";
+import { sortByDate } from "../utils/site";
 
 const posts = sortByDate((await getCollection("blog")).filter((post) => !post.data.draft));
 ---
@@ -31,13 +31,10 @@ const posts = sortByDate((await getCollection("blog")).filter((post) => !post.da
         <ul class="post-list">
           {posts.map((post) => (
             <li>
-              <span class="date">{formatDate(post.data.pubDate)}</span>
-              <div>
-                <a class="link" href={`/writing/${post.id}/`}>
-                  {post.data.title}
-                </a>
-                <p>{post.data.description}</p>
-              </div>
+              <a class="link" href={`/writing/${post.id}/`}>
+                {post.data.title}
+              </a>
+              <p>{post.data.description}</p>
             </li>
           ))}
         </ul>
@@ -75,27 +72,9 @@ const posts = sortByDate((await getCollection("blog")).filter((post) => !post.da
     padding: 0;
   }
 
-  .post-list li {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr);
-    gap: 0.2rem 1rem;
-  }
-
-  .date {
-    color: var(--muted);
-    font-size: 0.9rem;
-    padding-top: 0.08rem;
-  }
-
   .post-list p {
     margin: 0.2rem 0 0;
     color: var(--muted);
     font-size: 0.95rem;
-  }
-
-  @media (max-width: 540px) {
-    .post-list li {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

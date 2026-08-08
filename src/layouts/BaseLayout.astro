@@ -26,6 +26,7 @@ interface Props {
   breadcrumb?: BreadcrumbEntry[];
   structuredData?: StructuredData;
   noindex?: boolean;
+  includeStructuredAuthor?: boolean;
   /** Brand appended after the title. Pass a product name on funnel pages, or false for none. */
   titleSuffix?: string | false;
 }
@@ -45,6 +46,7 @@ const {
   breadcrumb = [],
   structuredData,
   noindex = false,
+  includeStructuredAuthor = true,
   titleSuffix = site.name
 } = Astro.props;
 
@@ -63,7 +65,8 @@ const baseStructuredData = createBaseStructuredData({
   // article:* meta only applies to og:type=article, so freshness for landing pages
   // is carried by the WebPage node instead.
   datePublished: articlePublishedTime,
-  dateModified: articleModifiedTime
+  dateModified: articleModifiedTime,
+  includeAuthor: includeStructuredAuthor
 });
 const structuredDataItems = [
   baseStructuredData,

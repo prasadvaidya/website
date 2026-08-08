@@ -18,7 +18,8 @@ export function createBaseStructuredData({
   keywords = [],
   breadcrumb = [],
   datePublished,
-  dateModified
+  dateModified,
+  includeAuthor = true
 }: {
   title: string;
   description: string;
@@ -27,28 +28,33 @@ export function createBaseStructuredData({
   breadcrumb?: BreadcrumbEntry[];
   datePublished?: string;
   dateModified?: string;
+  includeAuthor?: boolean;
 }) {
   const breadcrumbId = `${url}#breadcrumb`;
 
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "Person",
-        "@id": personId,
-        name: site.author,
-        jobTitle: "Principal Technical Architect",
-        description: site.description,
-        url: site.url,
-        knowsAbout: [
-          "Software architecture",
-          "Backend systems",
-          "SaaS platforms",
-          "AI systems",
-          "Product engineering"
-        ],
-        sameAs: Object.values(site.socials)
-      },
+      ...(includeAuthor
+        ? [
+            {
+              "@type": "Person",
+              "@id": personId,
+              name: site.author,
+              jobTitle: "Principal Technical Architect",
+              description: site.description,
+              url: site.url,
+              knowsAbout: [
+                "Software architecture",
+                "Backend systems",
+                "SaaS platforms",
+                "AI systems",
+                "Product engineering"
+              ],
+              sameAs: Object.values(site.socials)
+            }
+          ]
+        : []),
       {
         "@type": "WebSite",
         "@id": websiteId,
@@ -56,7 +62,7 @@ export function createBaseStructuredData({
         name: site.name,
         description: site.description,
         inLanguage: "en",
-        publisher: { "@id": personId }
+        ...(includeAuthor ? { publisher: { "@id": personId } } : {})
       },
       {
         "@type": "WebPage",
@@ -65,8 +71,9 @@ export function createBaseStructuredData({
         name: title,
         description,
         isPartOf: { "@id": websiteId },
-        about: { "@id": personId },
-        author: { "@id": personId },
+        ...(includeAuthor
+          ? { about: { "@id": personId }, author: { "@id": personId } }
+          : {}),
         inLanguage: "en",
         ...(datePublished ? { datePublished } : {}),
         ...(dateModified ? { dateModified } : {}),
