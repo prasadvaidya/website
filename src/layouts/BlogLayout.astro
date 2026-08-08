@@ -17,6 +17,8 @@ interface Props {
   problem?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  image?: string;
+  imageAlt?: string;
 }
 
 const {
@@ -31,7 +33,9 @@ const {
   audience,
   problem,
   ctaLabel,
-  ctaHref
+  ctaHref,
+  image = "/og-default.png",
+  imageAlt
 } = Astro.props;
 const canonicalPath = canonical ?? Astro.url.pathname;
 const canonicalUrl = canonicalPath.startsWith("http") ? canonicalPath : absoluteUrl(canonicalPath);
@@ -54,7 +58,7 @@ const blogPostingStructuredData = {
   publisher: personReference(),
   keywords: tags,
   articleSection: category,
-  image: absoluteUrl("/og-default.png"),
+  image: absoluteUrl(image),
   audience: audience ? { "@type": "Audience", audienceType: audience } : undefined,
   about: problem,
   inLanguage: "en",
@@ -70,6 +74,8 @@ const blogPostingStructuredData = {
   title={title}
   description={description}
   canonical={canonicalPath}
+  image={image}
+  imageAlt={imageAlt ?? title}
   ogType="article"
   articlePublishedTime={pubDate?.toISOString()}
   articleModifiedTime={(updatedDate ?? pubDate)?.toISOString()}

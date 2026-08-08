@@ -5,6 +5,12 @@ import { formatDate, site, sortByDate, sortProjectsByMaturity } from "../utils/s
 
 const posts = sortByDate((await getCollection("blog")).filter((post) => !post.data.draft));
 const projects = sortProjectsByMaturity(await getCollection("projects"));
+const products = (await getCollection("products")).filter((product) => !product.data.draft);
+const rootProducts = products
+  .filter((product) => !product.data.parentProduct)
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured));
+const useCasesFor = (productId: string) =>
+  products.filter((product) => product.data.parentProduct === productId);
 ---
 
 <BaseLayout>
@@ -22,6 +28,37 @@ const projects = sortProjectsByMaturity(await getCollection("projects"));
         keep track of all of it.
       </p>
     </section>
+
+    {
+      rootProducts.length > 0 && (
+        <section>
+          <h2>Products</h2>
+          <ul class="item-list">
+            {rootProducts.map((product) => (
+              <li>
+                <p class="item-title">
+                  <a class="link" href={`/products/${product.id}/`}>
+                    {product.data.title}
+                  </a>
+                  <span class="item-status">
+                    ({product.data.mode === "live" ? "available" : "early access"})
+                  </span>
+                </p>
+                <p class="item-desc">{product.data.description}</p>
+                {useCasesFor(product.id).map((useCase) => (
+                  <p class="item-sub">
+                    <a class="link" href={`/products/${useCase.id}/`}>
+                      {useCase.data.listingTitle}
+                    </a>
+                    <span class="item-status">for {useCase.data.listingAudience}</span>
+                  </p>
+                ))}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
     <section>
       <h2>Projects</h2>
@@ -155,6 +192,15 @@ const projects = sortProjectsByMaturity(await getCollection("projects"));
   .item-desc {
     margin: 0.15rem 0 0;
     color: var(--muted);
+  }
+
+  .item-sub {
+    margin: 0.35rem 0 0 1rem;
+    font-size: 0.95rem;
+  }
+
+  .item-sub:first-of-type {
+    margin-top: 0.6rem;
   }
 
   .hello {

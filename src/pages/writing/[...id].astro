@@ -26,6 +26,8 @@ const { Content } = await render(post);
   problem={post.data.problem}
   ctaLabel={post.data.ctaLabel}
   ctaHref={post.data.ctaHref}
+  image={post.data.ogImage}
+  imageAlt={post.data.ogImageAlt}
   canonical={`/writing/${post.id}/`}
 >
   <Content />

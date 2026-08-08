@@ -18,6 +18,8 @@ const blog = defineCollection({
     validationStage: z.enum(["idea", "problem", "prototype", "waitlist", "live"]).optional(),
     ctaLabel: z.string().optional(),
     ctaHref: z.string().optional(),
+    ogImage: z.string().optional(),
+    ogImageAlt: z.string().optional(),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false)
   })
@@ -80,6 +82,20 @@ const products = defineCollection({
           })
         )
         .default([]),
+      example: z
+        .object({
+          title: z.string(),
+          intro: z.string().optional(),
+          lines: z
+            .array(
+              z.object({
+                label: z.string(),
+                value: z.string()
+              })
+            )
+            .min(3)
+        })
+        .optional(),
       faqs: z
         .array(
           z.object({

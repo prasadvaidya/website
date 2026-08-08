@@ -6,15 +6,30 @@ export type StructuredData = StructuredDataObject | StructuredDataObject[];
 const personId = absoluteUrl("/#person");
 const websiteId = absoluteUrl("/#website");
 
+export interface BreadcrumbEntry {
+  name: string;
+  item: string;
+}
+
 export function createBaseStructuredData({
   title,
   description,
-  url
+  url,
+  keywords = [],
+  breadcrumb = [],
+  datePublished,
+  dateModified
 }: {
   title: string;
   description: string;
   url: string;
+  keywords?: string[];
+  breadcrumb?: BreadcrumbEntry[];
+  datePublished?: string;
+  dateModified?: string;
 }) {
+  const breadcrumbId = `${url}#breadcrumb`;
+
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -25,6 +40,13 @@ export function createBaseStructuredData({
         jobTitle: "Principal Technical Architect",
         description: site.description,
         url: site.url,
+        knowsAbout: [
+          "Software architecture",
+          "Backend systems",
+          "SaaS platforms",
+          "AI systems",
+          "Product engineering"
+        ],
         sameAs: Object.values(site.socials)
       },
       {
@@ -45,8 +67,26 @@ export function createBaseStructuredData({
         isPartOf: { "@id": websiteId },
         about: { "@id": personId },
         author: { "@id": personId },
-        inLanguage: "en"
-      }
+        inLanguage: "en",
+        ...(datePublished ? { datePublished } : {}),
+        ...(dateModified ? { dateModified } : {}),
+        ...(keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
+        ...(breadcrumb.length > 0 ? { breadcrumb: { "@id": breadcrumbId } } : {})
+      },
+      ...(breadcrumb.length > 0
+        ? [
+            {
+              "@type": "BreadcrumbList",
+              "@id": breadcrumbId,
+              itemListElement: breadcrumb.map((entry, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                name: entry.name,
+                item: entry.item
+              }))
+            }
+          ]
+        : [])
     ]
   };
 }
