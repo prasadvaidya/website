@@ -3,8 +3,10 @@ import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 
-const OUT = resolve(process.argv[2] ?? "./public/og");
-mkdirSync(OUT, { recursive: true });
+const OG_OUT = resolve(process.argv[2] ?? "./public/og");
+const ARTICLE_OUT = resolve(process.argv[3] ?? "./public/article");
+mkdirSync(OG_OUT, { recursive: true });
+mkdirSync(ARTICLE_OUT, { recursive: true });
 
 const BG = "#f7f5f0";
 const INK = "#111111";
@@ -158,18 +160,21 @@ const sparkScene = `
 
 const cards = [
   {
+    slug: "mental-offloading",
     file: "mental-offloading.png",
     eyebrow: "MENTAL OFFLOADING",
     lines: ["Put work down", "without losing", "your place."],
     scene: handoffScene
   },
   {
+    slug: "work-context-switching",
     file: "work-context-switching.png",
     eyebrow: "WORK CONTINUITY",
     lines: ["Switch tasks", "without losing", "context."],
     scene: lanesScene
   },
   {
+    slug: "end-of-day-shutdown",
     file: "end-of-day-shutdown.png",
     eyebrow: "EVENING RESET",
     lines: ["A shutdown ritual", "for the work you", "did not finish."],
@@ -178,6 +183,7 @@ const cards = [
     scene: shutdownScene
   },
   {
+    slug: "creative-idea-capture",
     file: "creative-idea-capture.png",
     eyebrow: "CREATIVE CONTINUITY",
     lines: ["Capture the idea", "before the spark", "fades."],
@@ -197,9 +203,34 @@ for (const card of cards) {
   ${textLines(60, 285, card.lines, size, gap)}
 </svg>`;
 
-  const out = resolve(OUT, card.file);
+  const out = resolve(OG_OUT, card.file);
   const info = await sharp(Buffer.from(svg))
     .png({ compressionLevel: 9, palette: true, quality: 92, effort: 10 })
     .toFile(out);
   console.log(`${card.file}  ${info.width}x${info.height}  ${(info.size / 1024).toFixed(1)} KB`);
+}
+
+// Article structured data uses illustration-only images rather than social cards
+// with large embedded text. Google recommends providing 16:9, 4:3, and 1:1 crops.
+const articleVariants = [
+  { suffix: "16x9", width: 1200, height: 675, scale: 1.55 },
+  { suffix: "4x3", width: 1200, height: 900, scale: 1.75 },
+  { suffix: "1x1", width: 1200, height: 1200, scale: 2 }
+];
+
+for (const card of cards) {
+  for (const variant of articleVariants) {
+    const transform = `translate(${variant.width / 2} ${variant.height / 2}) scale(${variant.scale}) translate(-900 -320)`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${variant.width}" height="${variant.height}" viewBox="0 0 ${variant.width} ${variant.height}">
+  <rect width="${variant.width}" height="${variant.height}" fill="${BG}"/>
+  <g transform="${transform}">${card.scene}</g>
+</svg>`;
+
+    const file = `${card.slug}-${variant.suffix}.png`;
+    const out = resolve(ARTICLE_OUT, file);
+    const info = await sharp(Buffer.from(svg))
+      .png({ compressionLevel: 9, palette: true, quality: 92, effort: 10 })
+      .toFile(out);
+    console.log(`article/${file}  ${info.width}x${info.height}  ${(info.size / 1024).toFixed(1)} KB`);
+  }
 }

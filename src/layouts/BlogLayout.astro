@@ -19,6 +19,7 @@ interface Props {
   ctaHref?: string;
   image?: string;
   imageAlt?: string;
+  articleImages?: string[];
 }
 
 const {
@@ -35,7 +36,8 @@ const {
   ctaLabel,
   ctaHref,
   image = "/og-default.png",
-  imageAlt
+  imageAlt,
+  articleImages = []
 } = Astro.props;
 const canonicalPath = canonical ?? Astro.url.pathname;
 const canonicalUrl = canonicalPath.startsWith("http") ? canonicalPath : absoluteUrl(canonicalPath);
@@ -58,7 +60,7 @@ const blogPostingStructuredData = {
   publisher: personReference(),
   keywords: tags,
   articleSection: category,
-  image: absoluteUrl(image),
+  image: (articleImages.length > 0 ? articleImages : [image]).map((item) => absoluteUrl(item)),
   audience: audience ? { "@type": "Audience", audienceType: audience } : undefined,
   about: problem,
   inLanguage: "en",
@@ -88,6 +90,7 @@ const blogPostingStructuredData = {
       <a class="link" href="/writing/">← Writing</a>
     </p>
     <h1>{title}</h1>
+    <p class="byline">By <a class="link" href="/about/">{site.author}</a></p>
     {metaParts.length > 0 && <p class="meta">{metaParts.join(" · ")}</p>}
     <div class="prose-custom body">
       <slot />
@@ -128,8 +131,13 @@ const blogPostingStructuredData = {
     font-weight: 600;
   }
 
-  .meta {
+  .byline {
     margin: 0.7rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .meta {
+    margin: 0.25rem 0 0;
     color: var(--muted);
     font-size: 0.9rem;
   }

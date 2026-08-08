@@ -20,6 +20,7 @@ const blog = defineCollection({
     ctaHref: z.string().optional(),
     ogImage: z.string().optional(),
     ogImageAlt: z.string().optional(),
+    articleImages: z.array(z.string()).length(3).optional(),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false)
   })
