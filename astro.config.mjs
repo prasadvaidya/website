@@ -41,12 +41,15 @@ const collectionRouteFiles = {
   writing: "src/pages/writing/[...id].astro"
 };
 
-// These sources can materially change the metadata, structured data, or navigational
-// links of every HTML page, so they participate in each page's lastmod calculation.
+// These sources can materially change the metadata or structured data of every HTML
+// page, so they participate in each page's lastmod calculation.
+//
+// Header.astro and Footer.astro are deliberately excluded: their edits are usually
+// presentational, and bumping lastmod on every URL for a style tweak trains Google to
+// distrust the sitemap. The nav links they render come from navItems in site.ts, so a
+// genuine navigation change still moves lastmod through that file.
 const sharedPageSources = [
   "src/layouts/BaseLayout.astro",
-  "src/components/Header.astro",
-  "src/components/Footer.astro",
   "src/utils/seo.ts",
   "src/utils/site.ts"
 ];
@@ -119,11 +122,9 @@ function lastModifiedFromGit(pathname) {
 export default defineConfig({
   site,
   output: "static",
-  redirects: {
-    "/work": "/about/",
-    "/life": "/now/",
-    "/contact": "/about/"
-  },
+  // Legacy URL redirects live in public/_redirects so Cloudflare Pages serves a real
+  // 301. Astro's static `redirects` would emit a meta-refresh page instead, which
+  // Google only interprets after rendering and ranks below a server-side redirect.
   integrations: [
     mdx(),
     tailwind({
