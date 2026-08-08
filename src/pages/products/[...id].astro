@@ -32,29 +32,20 @@ const waitlist = data.mode === "waitlist" ? data.waitlist : undefined;
 const waitlistProductId = `${data.parentProduct ?? product.id}-early-access`;
 const backHref = parentProduct ? `/products/${parentProduct.id}/` : "/products/";
 const backLabel = parentProduct ? `← ${parentProduct.data.title}` : "← All products";
-const breadcrumbItems = [
-  {
-    "@type": "ListItem",
-    position: 1,
-    name: "Products",
-    item: absoluteUrl("/products/")
-  },
+// Use-case pages carry the parent product name so the hub relationship is explicit;
+// the root page keeps its keyword in the h1 instead of repeating it above.
+const eyebrowName = parentProduct?.data.title;
+const breadcrumb = [
+  { name: "Products", item: absoluteUrl("/products/") },
   ...(parentProduct
     ? [
         {
-          "@type": "ListItem",
-          position: 2,
           name: parentProduct.data.title,
           item: absoluteUrl(`/products/${parentProduct.id}/`)
         }
       ]
     : []),
-  {
-    "@type": "ListItem",
-    position: parentProduct ? 3 : 2,
-    name: data.listingTitle ?? data.title,
-    item: canonicalUrl
-  }
+  { name: data.listingTitle ?? data.title, item: canonicalUrl }
 ];
 
 const faqStructuredData = {
@@ -70,11 +61,30 @@ const faqStructuredData = {
   }))
 };
 
-const breadcrumbStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: breadcrumbItems
-};
+// Hub pages publish their use cases as an ItemList so the spoke pages are
+// discoverable as a set rather than as three unrelated links.
+const useCaseListStructuredData =
+  !parentProduct && relatedUseCases.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "@id": `${canonicalUrl}#use-cases`,
+        name: `${data.title} use cases`,
+        itemListOrder: "https://schema.org/ItemListUnordered",
+        numberOfItems: relatedUseCases.length,
+        itemListElement: relatedUseCases.map((useCase, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: useCase.data.listingTitle ?? useCase.data.title,
+          description: useCase.data.listingDescription ?? useCase.data.description,
+          url: absoluteUrl(`/products/${useCase.id}/`)
+        }))
+      }
+    : undefined;
+
+const structuredData = [faqStructuredData, useCaseListStructuredData].filter(
+  (entry) => entry !== undefined
+);
 ---
 
 <BaseLayout
@@ -85,7 +95,9 @@ const breadcrumbStructuredData = {
   imageAlt={data.ogImageAlt ?? `${data.title} product preview`}
   keywords={data.keywords}
   articleModifiedTime={data.updatedDate?.toISOString()}
-  structuredData={[faqStructuredData, breadcrumbStructuredData]}
+  titleSuffix={parentProduct?.data.title ?? false}
+  breadcrumb={breadcrumb}
+  structuredData={structuredData}
 >
   <article class="funnel-shell">
     <header class="hero">
@@ -93,7 +105,7 @@ const breadcrumbStructuredData = {
       <p class="badge">
         {data.badge ?? (data.mode === "live" ? "Available now" : "Accepting early interest")}
       </p>
-      <p class="product-name">{data.title}</p>
+      {eyebrowName && <p class="product-name">{eyebrowName}</p>}
       <h1>{data.headline}</h1>
       <p class="summary">{data.summary}</p>
 
@@ -191,6 +203,26 @@ const breadcrumbStructuredData = {
         ))}
       </div>
     </section>
+
+    {
+      data.example && (
+        <section class="example" aria-labelledby="example-heading">
+          <div class="section-heading">
+            <p class="section-label">What it looks like</p>
+            <h2 id="example-heading">{data.example.title}</h2>
+            {data.example.intro && <p class="example-intro">{data.example.intro}</p>}
+          </div>
+          <dl class="example-card">
+            {data.example.lines.map((line) => (
+              <div>
+                <dt>{line.label}</dt>
+                <dd>{line.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )
+    }
 
     <section class="story" aria-label={`About ${data.title}`}>
       <div class="prose-custom story-copy">
@@ -371,6 +403,7 @@ const breadcrumbStructuredData = {
   .framing,
   .use-cases,
   .benefits,
+  .example,
   .story,
   .faq {
     margin-top: clamp(4rem, 10vw, 7rem);
@@ -479,6 +512,46 @@ const breadcrumbStructuredData = {
     font-size: 0.92rem;
   }
 
+  .example-intro {
+    margin: 0.9rem 0 0;
+    color: var(--muted);
+  }
+
+  .example-card {
+    display: grid;
+    gap: 0;
+    margin: 1.7rem 0 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 0.4rem 1.35rem;
+  }
+
+  .example-card > div {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+    gap: 0.35rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-block: 1rem;
+  }
+
+  .example-card > div:last-child {
+    border-bottom: 0;
+  }
+
+  .example-card dt {
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .example-card dd {
+    margin: 0;
+    font-size: 0.98rem;
+  }
+
   .story {
     border-block: 1px solid var(--border);
     padding-block: clamp(2.5rem, 6vw, 4rem);
@@ -547,6 +620,10 @@ const breadcrumbStructuredData = {
 
     .proof-strip {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .example-card > div {
+      grid-template-columns: 1fr;
     }
   }
 </style>

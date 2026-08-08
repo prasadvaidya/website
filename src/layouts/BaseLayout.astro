@@ -4,7 +4,12 @@ import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import "../styles/global.css";
 import { absoluteUrl, seo, site } from "../utils/site";
-import { createBaseStructuredData, serializeJsonLd, type StructuredData } from "../utils/seo";
+import {
+  createBaseStructuredData,
+  serializeJsonLd,
+  type BreadcrumbEntry,
+  type StructuredData
+} from "../utils/seo";
 
 interface Props {
   title?: string;
@@ -18,8 +23,12 @@ interface Props {
   articleSection?: string;
   articleTags?: string[];
   keywords?: string[];
+  breadcrumb?: BreadcrumbEntry[];
   structuredData?: StructuredData;
   noindex?: boolean;
+  includeStructuredAuthor?: boolean;
+  /** Brand appended after the title. Pass a product name on funnel pages, or false for none. */
+  titleSuffix?: string | false;
 }
 
 const {
@@ -34,17 +43,30 @@ const {
   articleSection,
   articleTags = [],
   keywords = [],
+  breadcrumb = [],
   structuredData,
-  noindex = false
+  noindex = false,
+  includeStructuredAuthor = true,
+  titleSuffix = site.name
 } = Astro.props;
 
-const pageTitle = title === site.title ? title : `${title} | ${site.name}`;
+const pageTitle =
+  title === site.title || !titleSuffix || title.includes(titleSuffix)
+    ? title
+    : `${title} | ${titleSuffix}`;
 const canonicalUrl = canonical.startsWith("http") ? canonical : absoluteUrl(canonical);
 const imageUrl = image.startsWith("http") ? image : absoluteUrl(image);
 const baseStructuredData = createBaseStructuredData({
   title: pageTitle,
   description,
-  url: canonicalUrl
+  url: canonicalUrl,
+  keywords,
+  breadcrumb,
+  // article:* meta only applies to og:type=article, so freshness for landing pages
+  // is carried by the WebPage node instead.
+  datePublished: articlePublishedTime,
+  dateModified: articleModifiedTime,
+  includeAuthor: includeStructuredAuthor
 });
 const structuredDataItems = [
   baseStructuredData,
@@ -61,7 +83,6 @@ const structuredDataJson = serializeJsonLd(structuredDataItems);
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    {keywords.length > 0 && <meta name="keywords" content={keywords.join(", ")} />}
     {noindex && <meta name="robots" content="noindex, follow" />}
     {seo.googleSiteVerification && <meta name="google-site-verification" content={seo.googleSiteVerification} />}
     <link rel="canonical" href={canonicalUrl} />
@@ -72,6 +93,7 @@ const structuredDataJson = serializeJsonLd(structuredDataItems);
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />

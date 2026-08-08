@@ -1,0 +1,10 @@
+# Legacy URLs from the previous site structure.
+# Kept here rather than in astro.config.mjs so Cloudflare Pages serves a real 301
+# instead of a rendered meta-refresh page. Both slash variants are listed because
+# Pages only auto-appends the trailing slash for paths it serves itself.
+/work     /about/  301
+/work/    /about/  301
+/life     /now/    301
+/life/    /now/    301
+/contact  /about/  301
+/contact/ /about/  301

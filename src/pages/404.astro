@@ -1,0 +1,67 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="That page does not exist. Links to the rest of the site."
+  canonical="/404"
+  noindex
+>
+  <div class="container page">
+    <h1>That page isn't here.</h1>
+    <p class="lead">
+      The link may be old, or I may have moved something. A few places worth trying:
+    </p>
+    <ul class="links">
+      <li>
+        <a class="link" href="/products/mental-offloading/">Mental Offloading</a>
+        <span>the product I'm building, and the problem behind it</span>
+      </li>
+      <li>
+        <a class="link" href="/writing/">Writing</a>
+        <span>notes on personal systems, context switching, and unfinished work</span>
+      </li>
+      <li>
+        <a class="link" href="/projects/">Projects</a>
+        <span>what I'm building and testing</span>
+      </li>
+      <li>
+        <a class="link" href="/">Home</a>
+        <span>the short version of everything</span>
+      </li>
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: clamp(2.5rem, 7vw, 4.5rem);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  .lead {
+    max-width: 38rem;
+    margin: 0.9rem 0 0;
+    color: var(--muted);
+  }
+
+  .links {
+    display: grid;
+    gap: 1.05rem;
+    list-style: none;
+    margin: 2.2rem 0 0;
+    padding: 0;
+  }
+
+  .links span {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--muted);
+  }
+</style>

@@ -1,8 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import { absoluteUrl, site } from "../utils/site";
-import { formatDate } from "../utils/site";
-import { personReference } from "../utils/seo";
 
 interface Props {
   title: string;
@@ -17,6 +15,9 @@ interface Props {
   problem?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  image?: string;
+  imageAlt?: string;
+  articleImages?: string[];
 }
 
 const {
@@ -31,13 +32,20 @@ const {
   audience,
   problem,
   ctaLabel,
-  ctaHref
+  ctaHref,
+  image = "/og-default.png",
+  imageAlt,
+  articleImages = []
 } = Astro.props;
+// The widest crop doubles as the on-page lead image, so the images referenced by
+// BlogPosting.image are actually visible to readers rather than markup-only.
+// generate-og-images.mjs emits the -16x9 suffix at a fixed 1200x675.
+const leadImage =
+  articleImages.find((source) => source.includes("-16x9")) ?? articleImages.at(-1);
 const canonicalPath = canonical ?? Astro.url.pathname;
 const canonicalUrl = canonicalPath.startsWith("http") ? canonicalPath : absoluteUrl(canonicalPath);
 const hasValidationCta = Boolean(ctaLabel && ctaHref);
 const metaParts = [
-  pubDate ? formatDate(pubDate) : undefined,
   readingTime,
   category
 ].filter(Boolean);
@@ -50,11 +58,9 @@ const blogPostingStructuredData = {
   mainEntityOfPage: canonicalUrl,
   datePublished: pubDate?.toISOString(),
   dateModified: (updatedDate ?? pubDate)?.toISOString(),
-  author: personReference(),
-  publisher: personReference(),
   keywords: tags,
   articleSection: category,
-  image: absoluteUrl("/og-default.png"),
+  image: (articleImages.length > 0 ? articleImages : [image]).map((item) => absoluteUrl(item)),
   audience: audience ? { "@type": "Audience", audienceType: audience } : undefined,
   about: problem,
   inLanguage: "en",
@@ -70,11 +76,14 @@ const blogPostingStructuredData = {
   title={title}
   description={description}
   canonical={canonicalPath}
+  image={image}
+  imageAlt={imageAlt ?? title}
   ogType="article"
   articlePublishedTime={pubDate?.toISOString()}
   articleModifiedTime={(updatedDate ?? pubDate)?.toISOString()}
   articleSection={category}
   articleTags={tags}
+  includeStructuredAuthor={false}
   structuredData={blogPostingStructuredData}
 >
   <article class="container page">
@@ -83,6 +92,19 @@ const blogPostingStructuredData = {
     </p>
     <h1>{title}</h1>
     {metaParts.length > 0 && <p class="meta">{metaParts.join(" · ")}</p>}
+    {
+      leadImage && (
+        <img
+          class="lead-image"
+          src={leadImage}
+          alt={imageAlt ?? title}
+          width="1200"
+          height="675"
+          fetchpriority="high"
+          decoding="async"
+        />
+      )
+    }
     <div class="prose-custom body">
       <slot />
     </div>
@@ -126,6 +148,16 @@ const blogPostingStructuredData = {
     margin: 0.7rem 0 0;
     color: var(--muted);
     font-size: 0.9rem;
+  }
+
+  .lead-image {
+    display: block;
+    width: 100%;
+    max-width: 38rem;
+    height: auto;
+    margin: 2rem 0 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
   }
 
   .body {
