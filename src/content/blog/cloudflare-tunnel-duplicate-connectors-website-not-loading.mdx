@@ -1,0 +1,264 @@
+---
+title: "Cloudflare Tunnel connected but website not loading? Check for duplicate connectors"
+description: "Cloudflare Tunnel can look healthy while your site returns intermittent 502s. Learn how to find and safely remove a duplicate cloudflared connector."
+pubDate: 2026-08-26
+category: "Infrastructure"
+tags:
+  - "Cloudflare Tunnel"
+  - "cloudflared"
+  - "502 Bad Gateway"
+  - "Docker Compose"
+  - "self-hosting"
+readingTime: "7 min read"
+audience: "Developers and operators running Cloudflare Tunnel for self-hosted applications"
+problem: "A healthy-looking Cloudflare Tunnel that intermittently fails because multiple connectors cannot all reach the same origin"
+draft: false
+---
+
+A deployment can appear completely healthy: the containers are running, the application responds inside the server, and the Cloudflare Tunnel dashboard shows a connected tunnel. Yet the public website may load on one request and return `502 Bad Gateway` on the next.
+
+One easily missed cause is **two `cloudflared` connectors running for the same tunnel**.
+
+This can happen when someone starts a connector manually during troubleshooting and an automated deployment later starts another as part of a Docker Compose stack. Both use the same tunnel token, so Cloudflare treats them as replicas and can send requests through either one.
+
+If only the managed connector can reach the origin on its Docker network, requests routed through the stale manual connector will fail. From the outside, the application looks unstable. In reality, requests are taking two different paths.
+
+If your Cloudflare Tunnel is connected but the website is not loading consistently, count the connector IDs first.
+
+## How duplicate connectors split requests
+
+The intended request path was straightforward:
+
+```text
+Browser
+   ↓
+Cloudflare edge
+   ↓
+cloudflared managed by Docker Compose
+   ↓
+http://origin-service:PORT on the Docker network
+   ↓
+Application
+```
+
+In this design, one deployment mechanism owns `cloudflared` and the application services. It creates or replaces the connector together with the rest of the stack.
+
+The accidental architecture looked like this:
+
+```text
+                              ┌─→ Manual cloudflared process ─→ unreachable origin
+Browser → Cloudflare edge ────┤
+                              └─→ Managed cloudflared ────────→ origin-service:PORT
+```
+
+Both connectors authenticated with the same tunnel token. Cloudflare therefore saw two valid replicas, even though only one had a valid route to the application.
+
+## Why duplicate connectors can break a healthy tunnel
+
+Cloudflare Tunnel supports replicas for high availability. A replica is another `cloudflared` instance running the same tunnel. Each instance establishes outbound connections to Cloudflare's network, and additional replicas provide another path to the origin if one host goes down.
+
+That is useful when every replica can reach the same healthy application. It becomes dangerous when a forgotten process, systemd service, Docker container, or old VM is still using the token.
+
+[Cloudflare's documentation on tunnel replicas](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/configure-tunnels/tunnel-availability/) explains that requests are sent to a geographically close replica, with no guarantee about which replica will be selected. Replicas do not provide configurable traffic steering. A connector can therefore communicate with Cloudflare while failing to reach the service configured as its local origin.
+
+The important distinction is:
+
+```text
+Connector → Cloudflare edge is healthy
+Connector → application origin is broken
+```
+
+The first condition makes the tunnel look connected. The second breaks the website. Cloudflare makes the same distinction in its [Tunnel troubleshooting guide](https://developers.cloudflare.com/cloudflare-one/troubleshooting/tunnel/): a tunnel `502` means `cloudflared` is connected to Cloudflare but cannot reach the origin service.
+
+## Connections and connectors are not the same thing
+
+One detail can send the investigation in the wrong direction: a single `cloudflared` instance normally establishes several long-lived connections to Cloudflare for redundancy.
+
+Seeing several connections does not automatically mean several processes are running. Look at the distinct connector or replica IDs in the Cloudflare dashboard, not only the total number of edge connections.
+
+- Multiple connections under one connector ID are normal.
+- Multiple connector IDs mean multiple `cloudflared` instances are attached to the tunnel.
+- Multiple connectors are safe only when they are intentional and can all reach the origin.
+
+## Symptoms of a stale or duplicate cloudflared connector
+
+The exact symptoms depend on which connector receives a request, but common signs include:
+
+- The tunnel is shown as healthy, but the website intermittently returns `502`.
+- The application works when tested inside Docker or directly on the VM.
+- Some requests succeed while identical requests fail.
+- Restarting the application does not resolve the public failure.
+- Cloudflare shows more connector IDs than expected.
+- Connector logs show that only some public requests reach the managed container.
+- The connectors run on different hosts or network paths.
+
+An especially strong clue is an application that works consistently through its internal URL but fails through the public hostname.
+
+## How to find every running cloudflared instance
+
+Start in the Cloudflare dashboard:
+
+1. Open **Networking → Tunnels**.
+2. Select the affected tunnel.
+3. Inspect its active connectors or replicas.
+4. Note each connector ID, hostname, version, and last-seen time.
+
+Then inspect every VM that may have run the tunnel. Check processes, system services, and containers because `cloudflared` may have been started in more than one way.
+
+```bash
+pgrep -a cloudflared
+systemctl status cloudflared --no-pager
+docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}' | grep cloudflared
+docker compose ps cloudflared
+```
+
+Also check whether a shell or terminal multiplexer still owns a manually launched process:
+
+```bash
+ps -ef | grep '[c]loudflared'
+```
+
+The goal is to answer one question: **which system is supposed to own this connector?**
+
+For example, if Docker Compose is the chosen owner, a host-level service or manually started process is unexpected.
+
+## Test the origin from the connector's network
+
+Testing only from the host is not enough. `localhost` and Docker service names mean different things depending on where `cloudflared` runs.
+
+For a host-level connector, test the exact host-reachable origin:
+
+```bash
+curl -v http://127.0.0.1:PORT
+```
+
+For a connector running inside Docker, test from the same Docker network. If a diagnostic container has Node.js, for example:
+
+```bash
+docker compose exec diagnostic-service \
+  node -e 'fetch("http://origin-service:PORT").then(r => console.log(r.status)).catch(console.error)'
+```
+
+This catches a common networking mistake:
+
+- A process on the VM may reach `127.0.0.1:<published-port>`.
+- A container should normally reach another container through its Compose service name, such as `http://origin-service:PORT`.
+- A host-level connector generally cannot resolve a Docker-only hostname such as `origin-service`.
+- A container's `localhost` refers to that container, not to another service or the host.
+
+Replace `PORT`, `origin-service`, and `diagnostic-service` with values from the environment being tested.
+
+Every intentional replica must be tested from its own network namespace. A URL that works for one connector may be invalid for another.
+
+## How to remove the duplicate connector safely
+
+Choose one deployment owner before stopping anything. If CI/CD and Docker Compose should manage `cloudflared`, stop and disable the manually installed service:
+
+```bash
+sudo systemctl stop cloudflared
+sudo systemctl disable cloudflared
+```
+
+If the extra connector is a manually created Docker container, identify its exact name before stopping it:
+
+```bash
+docker ps --filter ancestor=cloudflare/cloudflared
+docker stop <unexpected-container-name>
+```
+
+If it is a foreground process, stop the shell command that started it. Avoid blindly killing every `cloudflared` process; that may also stop the connector currently serving production traffic.
+
+Do not rotate or revoke the tunnel token merely to remove one unwanted replica unless you intend to update every legitimate connector. Replicas of a remotely managed tunnel commonly share the same token.
+
+After stopping the extra process, return to the Cloudflare dashboard and wait for its connector to disappear or become inactive. Confirm that only the expected connector remains.
+
+## Prove the fix with repeated public requests
+
+One successful request is not enough to rule out a second bad path. Run repeated checks against uncached paths or add a changing query parameter:
+
+```bash
+for i in $(seq 1 20); do
+  curl --silent --show-error \
+    --output /dev/null \
+    --write-out "%{http_code}\n" \
+    "https://app.example.org/health?probe=$i"
+done
+```
+
+Also verify a dynamic health endpoint:
+
+```bash
+curl --fail --show-error https://app.example.org/health
+```
+
+At the same time, watch the managed connector logs:
+
+```bash
+docker compose logs --since=10m --follow cloudflared
+```
+
+The public checks should succeed consistently, and the requests should appear in the expected connector's logs.
+
+## How to prevent duplicate Cloudflare Tunnel connectors
+
+The durable fix is clear operational ownership, not a better cleanup command.
+
+### Use one owner per connector
+
+Choose exactly one mechanism to run `cloudflared` on a host:
+
+- Docker Compose
+- systemd
+- Kubernetes
+- another orchestrator
+
+Do not mix a manually installed service with an orchestrated connector unless you intentionally want replicas and have tested every origin path.
+
+### Make manual runs temporary and visible
+
+When debugging, record what you started and stop it before restoring automation. Avoid installing a persistent service for a one-time test.
+
+### Add a connector-count check to the runbook
+
+Before debugging the application, confirm the expected number of connector IDs in Cloudflare. For a simple single-VM deployment, that number is usually one.
+
+## Duplicate connector checklist
+
+When you suspect duplicate Cloudflare Tunnel connectors, check these in order:
+
+1. Count distinct connector IDs in the Cloudflare dashboard.
+2. Find all `cloudflared` processes, services, and containers on every VM.
+3. Decide which deployment mechanism owns the connector.
+4. Compare connector hostnames and start times.
+5. Test the configured origin from each connector's network context.
+6. Inspect `cloudflared` logs for origin connection errors and `502` responses.
+7. Stop only the unintended connector.
+8. Repeat public requests enough times to expose intermittent routing.
+9. Add the expected connector count to the deployment runbook.
+
+## Frequently asked questions
+
+### Why does Cloudflare Tunnel show healthy when the website returns 502?
+
+Tunnel health shows that `cloudflared` is connected to Cloudflare's network. With duplicate connectors, one connector can be connected to Cloudflare but unable to reach the local origin. Requests routed through that connector return `502 Bad Gateway` even though the tunnel appears healthy.
+
+### Can multiple cloudflared connectors use the same tunnel token?
+
+Yes. Cloudflare supports multiple `cloudflared` replicas for the same tunnel. This improves availability only when every replica is intentional and can reach the same application.
+
+### How do I know whether I have duplicate connectors?
+
+Inspect the tunnel in the Cloudflare dashboard and count distinct connector or replica IDs. Then match those IDs and host details to the processes, services, and containers running across your infrastructure.
+
+## The final lesson
+
+Cloudflare Tunnel replicas are a reliability feature, but only when they are intentional and equivalent. Two connectors using the same tunnel token do not automatically have the same ability to reach the application.
+
+When a tunnel looks healthy but a website behaves inconsistently, count the connectors and trace the origin path from each one.
+
+The issue may be as simple as an old `cloudflared` process still doing exactly what it was told to do.
+
+## References
+
+- [Tunnel availability and failover](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/configure-tunnels/tunnel-availability/)
+- [Troubleshoot Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/troubleshooting/tunnel/)
